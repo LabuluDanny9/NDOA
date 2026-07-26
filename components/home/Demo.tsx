@@ -19,8 +19,8 @@ import { Separator } from "@/components/ui/separator"
 import { cn } from "@/lib/utils"
 
 const float = {
-  animate: { y: [0, -8, 0], rotate: [0, 1, 0], },
-  transition: { duration: 4, repeat: Infinity, repeatType: "loop", ease: "easeInOut" },
+  animate: { y: [0, -8, 0], rotate: [0, 1, 0] },
+  transition: { duration: 4, repeat: Infinity },
 }
 
 function FeatureItem({ Icon, children }: { Icon: React.ComponentType<any>; children: React.ReactNode }) {

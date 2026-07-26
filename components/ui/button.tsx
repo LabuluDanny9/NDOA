@@ -55,7 +55,7 @@ function Button({
   if (asChild && React.isValidElement(children)) {
     return React.cloneElement(children as React.ReactElement, {
       className: cn(classes, (children as any).props?.className),
-    })
+    } as any)
   }
 
   return (
