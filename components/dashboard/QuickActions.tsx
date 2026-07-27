@@ -3,9 +3,8 @@
 import Link from "next/link"
 import { motion } from "framer-motion"
 import { LucideIcon } from "lucide-react"
-import { Card, CardContent, CardTitle } from "@/components/ui/card"
+import { Card, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
 
 export interface QuickAction {
   title: string

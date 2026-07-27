@@ -3,7 +3,7 @@
 import React from "react"
 import { Guest } from "./types"
 import { Button } from "@/components/ui/button"
-import { Trash2, Edit, Eye } from "lucide-react"
+import { Edit, Eye } from "lucide-react"
 import GuestActions from "./GuestActions"
 
 type Props = {
@@ -15,7 +15,7 @@ type Props = {
 
 export default function GuestTable({ guests, onView, onEdit, onDelete }: Props) {
   const [query, setQuery] = React.useState("")
-  const [sortKey, setSortKey] = React.useState<string | null>(null)
+  const [sortKey, setSortKey] = React.useState<keyof Guest | null>(null)
   const [asc, setAsc] = React.useState(true)
   const [page, setPage] = React.useState(1)
   const pageSize = 10
@@ -35,9 +35,9 @@ export default function GuestTable({ guests, onView, onEdit, onDelete }: Props) 
     }
 
     if (sortKey) {
-      list.sort((a: any, b: any) => {
-        const va = a[sortKey] ?? ""
-        const vb = b[sortKey] ?? ""
+      list.sort((a, b) => {
+        const va = String(a[sortKey] ?? "").toLowerCase()
+        const vb = String(b[sortKey] ?? "").toLowerCase()
         if (va < vb) return asc ? -1 : 1
         if (va > vb) return asc ? 1 : -1
         return 0
@@ -50,14 +50,6 @@ export default function GuestTable({ guests, onView, onEdit, onDelete }: Props) 
   const total = filtered.length
   const pages = Math.max(1, Math.ceil(total / pageSize))
   const current = filtered.slice((page - 1) * pageSize, page * pageSize)
-
-  function toggleSort(key: string) {
-    if (sortKey === key) setAsc(!asc)
-    else {
-      setSortKey(key)
-      setAsc(true)
-    }
-  }
 
   return (
     <div className="w-full overflow-auto">

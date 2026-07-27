@@ -37,14 +37,38 @@ export default function GuestsPage() {
 
   function handleImportPreview(rows: string[][]) {
     // simulation: map first column to lastName, second to firstName
-    const parsed = rows.slice(0, 50).map((r, i) => ({
+    const parsed: Guest[] = rows.slice(0, 50).map((r, i) => ({
       id: `imp-${i}-${Date.now()}`,
       lastName: r[0] ?? `Import${i}`,
       firstName: r[1] ?? "",
+      phone: undefined,
+      email: undefined,
+      address: "",
+      city: undefined,
+      province: undefined,
+      country: undefined,
+      gender: "other",
+      dateOfBirth: undefined,
+      category: undefined,
+      family: false,
+      friends: false,
+      colleagues: false,
+      vip: false,
+      witnesses: false,
+      bridesmaids: 0,
+      groomsmen: 0,
+      children: false,
+      tableNumber: null,
+      guestsCount: 0,
+      rsvpStatus: "pending",
+      arrivalTime: null,
+      message: undefined,
+      qrCode: undefined,
+      inviteCode: undefined,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     }))
-    setGuests((s) => [...parsed as any, ...s])
+    setGuests((s) => [...parsed, ...s])
   }
 
   return (
@@ -66,7 +90,7 @@ export default function GuestsPage() {
             onAdd={handleAdd}
             onImport={() => {}}
             onExport={() => {}}
-            onSearch={(q) => { /* delegated to table local search */ }}
+            onSearch={() => { /* delegated to table local search */ }}
           />
         </div>
       </div>

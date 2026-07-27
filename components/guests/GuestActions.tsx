@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react"
-import { MoreHorizontal, Copy, Trash, Printer, Download } from "lucide-react"
+import { MoreHorizontal } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuTrigger,
