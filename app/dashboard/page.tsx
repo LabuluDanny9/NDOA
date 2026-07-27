@@ -41,7 +41,7 @@ const statCards = [
 const weddingCards = [
   {
     id: "danny-abigail",
-    coverImage: "/images/wedding-1.jpg",
+    coverImage: "/hero.jpg",
     groomName: "Danny",
     brideName: "Abigail",
     weddingDate: "12 Août 2027",
@@ -54,7 +54,7 @@ const weddingCards = [
   },
   {
     id: "kevin-grace",
-    coverImage: "/images/wedding-2.jpg",
+    coverImage: "/hero.jpg",
     groomName: "Kevin",
     brideName: "Grâce",
     weddingDate: "03 Septembre 2027",

@@ -1,10 +1,11 @@
 "use client"
 
+import Image from "next/image"
 import { motion } from "framer-motion"
-import { Pencil, Share2, CheckCircle2, Clock, MapPin, Users, UserCheck, AlertCircle, XCircle } from "lucide-react"
+import { Pencil, Share2, Clock, MapPin, Users, UserCheck, AlertCircle, XCircle } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 
 export interface WeddingCardProps {
@@ -38,11 +39,13 @@ export default function WeddingCard({
       transition={{ type: "spring", stiffness: 260, damping: 22 }}
     >
       <Card className="overflow-hidden rounded-[2rem] bg-white shadow-[0_24px_80px_rgba(15,23,42,0.08)]">
-        <div className="relative">
-          <img
+        <div className="relative h-64 sm:h-72">
+          <Image
             src={coverImage}
             alt={`${groomName} et ${brideName}`}
-            className="h-64 w-full object-cover sm:h-72"
+            fill
+            sizes="(min-width: 1280px) 50vw, 100vw"
+            className="object-cover"
           />
 
           <div className="absolute left-4 top-4 inline-flex items-center gap-2 rounded-full bg-white/90 px-3 py-2 text-sm font-semibold text-foreground shadow-sm">
@@ -55,6 +58,7 @@ export default function WeddingCard({
             <Button
               variant="outline"
               size="icon"
+              aria-label={`Modifier le mariage de ${groomName} et ${brideName}`}
               className="h-11 w-11 rounded-2xl border-white/80 bg-white/90 text-foreground shadow-sm hover:border-amber-300"
             >
               <Pencil className="size-5" />
@@ -62,6 +66,7 @@ export default function WeddingCard({
             <Button
               variant="outline"
               size="icon"
+              aria-label={`Partager le mariage de ${groomName} et ${brideName}`}
               className="h-11 w-11 rounded-2xl border-white/80 bg-white/90 text-foreground shadow-sm hover:border-amber-300"
             >
               <Share2 className="size-5" />
