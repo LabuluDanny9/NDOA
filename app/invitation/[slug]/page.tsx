@@ -1,5 +1,4 @@
-"use client"
-
+import type { Metadata } from "next"
 import HeroInvitation from "@/components/invitation/HeroInvitation"
 import Countdown from "@/components/invitation/Countdown"
 import CoupleGallery from "@/components/invitation/CoupleGallery"
@@ -37,11 +36,11 @@ const invitation = {
     { time: "21:00", title: "Soirée dansante", description: "Musique live et danse jusqu'à l'aube." },
   ],
   gallery: [
-    "/images/invitation-1.jpg",
-    "/images/invitation-2.jpg",
-    "/images/invitation-3.jpg",
-    "/images/invitation-4.jpg",
-    "/images/invitation-5.jpg",
+    "/hero.jpg",
+    "/hero.jpg",
+    "/hero.jpg",
+    "/hero.jpg",
+    "/hero.jpg",
   ],
   gifts: [
     { title: "Fleurs et décoration", description: "Aidez-nous à créer un espace élégant et accueillant." },
@@ -55,8 +54,24 @@ const invitation = {
   },
 }
 
-export default function InvitationPage({ params }: { params: { slug: string } }) {
-  const eventUrl = typeof window !== "undefined" ? window.location.href : "https://ndoa.app/invitation/" + params.slug
+type InvitationPageProps = {
+  params: Promise<{ slug: string }>
+}
+
+export async function generateMetadata({ params }: InvitationPageProps): Promise<Metadata> {
+  const { slug } = await params
+
+  return {
+    title: `Invitation ${slug}`,
+    description: `Invitation au mariage de ${invitation.couple.groom} et ${invitation.couple.bride}.`,
+  }
+}
+
+export default async function InvitationPage({ params }: InvitationPageProps) {
+  const { slug } = await params
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"
+  const eventUrl = new URL(`/invitation/${encodeURIComponent(slug)}`, appUrl).toString()
+
   return (
     <div className="min-h-screen bg-[#08060f] text-white">
       <FloatingMenu />

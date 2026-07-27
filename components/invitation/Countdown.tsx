@@ -18,7 +18,7 @@ export default function Countdown({ targetDate }: { targetDate: string }) {
       transition={{ duration: 0.8, delay: 0.1 }}
       className="rounded-[2rem] border border-white/10 bg-white/5 p-8 shadow-2xl shadow-black/20 backdrop-blur-xl"
     >
-      <p className="text-sm uppercase tracking-[0.35em] text-slate-300">Compte à rebours jusqu'au jour J</p>
+      <p className="text-sm uppercase tracking-[0.35em] text-slate-300">Compte à rebours jusqu’au jour J</p>
       <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
         {timeLeft.map((segment) => (
           <div key={segment.label} className="rounded-3xl bg-slate-950/80 p-5 text-center">

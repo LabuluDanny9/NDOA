@@ -1,7 +1,7 @@
 "use client"
 
+import Image from "next/image"
 import { Copy, X } from "lucide-react"
-import { Button } from "@/components/ui/button"
 
 export default function ShareButtons({ url }: { url: string }) {
   function copyLink() {
@@ -25,7 +25,7 @@ export default function ShareButtons({ url }: { url: string }) {
           rel="noreferrer"
           className="inline-flex items-center justify-center gap-3 rounded-3xl border border-white/10 bg-slate-950/80 px-4 py-3 text-sm font-medium text-white transition hover:border-white/20 hover:bg-white/10"
         >
-          <img src="/whatsapp.png" alt="WhatsApp" className="h-5 w-5 object-contain" />
+          <Image src="/whatsapp.png" alt="" width={20} height={20} className="object-contain" />
           WhatsApp
         </a>
         <a
@@ -34,7 +34,7 @@ export default function ShareButtons({ url }: { url: string }) {
           rel="noreferrer"
           className="inline-flex items-center justify-center gap-3 rounded-3xl border border-white/10 bg-slate-950/80 px-4 py-3 text-sm font-medium text-white transition hover:border-white/20 hover:bg-white/10"
         >
-          <img src="/facebook.png" alt="Facebook" className="h-5 w-5 object-contain" />
+          <Image src="/facebook.png" alt="" width={20} height={20} className="object-contain" />
           Facebook
         </a>
       </div>
