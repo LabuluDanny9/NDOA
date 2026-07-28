@@ -71,6 +71,7 @@ export default function Topbar({
           </div>
 
           <motion.button
+            type="button"
             whileHover={{ y: -1 }}
             className="inline-flex h-12 w-12 items-center justify-center rounded-xl border border-gray-200/80 bg-white text-foreground transition hover:bg-gray-100"
             aria-label="Recherche"
@@ -79,6 +80,7 @@ export default function Topbar({
           </motion.button>
 
           <motion.button
+            type="button"
             whileHover={{ y: -1 }}
             className="relative inline-flex h-12 w-12 items-center justify-center rounded-xl border border-gray-200/80 bg-white text-foreground transition hover:bg-gray-100"
             aria-label="Notifications"
@@ -94,36 +96,34 @@ export default function Topbar({
 
           <motion.div whileHover={{ y: -1 }}>
             <Button
+              asChild
               className="hidden h-12 rounded-xl bg-amber-500 px-4 text-sm font-semibold text-white shadow-md shadow-amber-200 transition hover:bg-amber-600 md:inline-flex"
               size="sm"
             >
-              <Plus className="size-4" />
-              Créer un mariage
+              <Link href="/dashboard/create-wedding">
+                <Plus className="size-4" />
+                Créer un mariage
+              </Link>
             </Button>
           </motion.div>
 
           <DropdownMenu>
-            <DropdownMenuTrigger>
-              <button
-                type="button"
-                className="inline-flex items-center gap-3 rounded-full border border-gray-200/80 bg-white px-3 py-2 text-left transition hover:bg-gray-50 md:px-4"
-              >
-                <Avatar className="h-10 w-10">
-                  {userAvatar ? (
-                    <AvatarImage src={userAvatar} alt={userName} />
-                  ) : (
-                    <AvatarFallback>DL</AvatarFallback>
-                  )}
-                </Avatar>
-                <div className="hidden sm:flex flex-col gap-0.5">
-                  <span className="text-sm font-medium text-foreground">{userName}</span>
-                  <span className="text-xs text-muted-foreground">Administrateur</span>
-                </div>
-                <ChevronDown className="size-4 text-muted-foreground" />
-              </button>
+            <DropdownMenuTrigger className="inline-flex items-center gap-3 rounded-full border border-gray-200/80 bg-white px-3 py-2 text-left transition hover:bg-gray-50 md:px-4">
+              <Avatar className="h-10 w-10">
+                {userAvatar ? (
+                  <AvatarImage src={userAvatar} alt={userName} />
+                ) : (
+                  <AvatarFallback>DL</AvatarFallback>
+                )}
+              </Avatar>
+              <div className="hidden sm:flex flex-col gap-0.5">
+                <span className="text-sm font-medium text-foreground">{userName}</span>
+                <span className="text-xs text-muted-foreground">Administrateur</span>
+              </div>
+              <ChevronDown className="size-4 text-muted-foreground" />
             </DropdownMenuTrigger>
 
-            <DropdownMenuContent className="w-56">
+            <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuItem>
                 <Link href="/dashboard/profile">Mon profil</Link>
               </DropdownMenuItem>
