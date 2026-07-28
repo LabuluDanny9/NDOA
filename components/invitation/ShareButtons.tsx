@@ -25,7 +25,7 @@ export default function ShareButtons({ url }: { url: string }) {
           rel="noreferrer"
           className="inline-flex items-center justify-center gap-3 rounded-3xl border border-white/10 bg-slate-950/80 px-4 py-3 text-sm font-medium text-white transition hover:border-white/20 hover:bg-white/10"
         >
-          <Image src="/whatsapp.png" alt="" width={20} height={20} className="object-contain" />
+          <Image src="/whatsapp.png" alt="" width={510} height={489} className="h-5 w-auto object-contain" />
           WhatsApp
         </a>
         <a
@@ -34,7 +34,7 @@ export default function ShareButtons({ url }: { url: string }) {
           rel="noreferrer"
           className="inline-flex items-center justify-center gap-3 rounded-3xl border border-white/10 bg-slate-950/80 px-4 py-3 text-sm font-medium text-white transition hover:border-white/20 hover:bg-white/10"
         >
-          <Image src="/facebook.png" alt="" width={20} height={20} className="object-contain" />
+          <Image src="/facebook.png" alt="" width={438} height={570} className="h-5 w-auto object-contain" />
           Facebook
         </a>
       </div>

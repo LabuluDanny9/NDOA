@@ -3,12 +3,24 @@
 import { motion } from "framer-motion"
 import { useEffect, useState } from "react"
 
+const initialTimeLeft = [
+  { label: "Jours", value: "00" },
+  { label: "Heures", value: "00" },
+  { label: "Minutes", value: "00" },
+  { label: "Secondes", value: "00" },
+]
+
 export default function Countdown({ targetDate }: { targetDate: string }) {
-  const [timeLeft, setTimeLeft] = useState(getTimeLeft(targetDate))
+  const [timeLeft, setTimeLeft] = useState(initialTimeLeft)
 
   useEffect(() => {
-    const timer = window.setInterval(() => setTimeLeft(getTimeLeft(targetDate)), 1000)
-    return () => window.clearInterval(timer)
+    const update = () => setTimeLeft(getTimeLeft(targetDate))
+    const frame = window.requestAnimationFrame(update)
+    const timer = window.setInterval(update, 1000)
+    return () => {
+      window.cancelAnimationFrame(frame)
+      window.clearInterval(timer)
+    }
   }, [targetDate])
 
   return (
