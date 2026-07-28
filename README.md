@@ -1,36 +1,108 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# NDOA
 
-## Getting Started
+NDOA est une application Next.js de gestion de mariages et d’invitations
+numériques. Le dépôt contient actuellement une fondation UI stabilisée :
+landing page, tableau de bord de démonstration, assistant de création de
+mariage, gestion locale des invités et invitation publique.
 
-First, run the development server:
+La persistance, l’authentification et l’isolation multi-tenant seront
+introduites progressivement avec Supabase à partir de l’étape 2. Les pages qui
+en dépendent indiquent explicitement qu’elles sont planifiées ; elles ne
+simulent pas une connexion backend.
+
+## Prérequis
+
+- Node.js 20 ou plus récent ;
+- npm 10 ou plus récent ;
+- Git ;
+- Chromium Playwright pour les tests E2E.
+
+## Installation
 
 ```bash
+npm ci
+copy .env.example .env.local
+npx playwright install chromium
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+L’application est disponible sur [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Commandes
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run dev          # serveur de développement
+npm run lint         # ESLint
+npm run typecheck    # TypeScript sans émission
+npm test             # tests unitaires Vitest
+npm run test:watch   # Vitest en mode interactif
+npm run test:e2e     # tests Playwright
+npm run build        # build de production Next.js
+npm run check        # lint + typecheck + tests unitaires + build
+```
 
-## Learn More
+## Routes principales
 
-To learn more about Next.js, take a look at the following resources:
+| Route | État |
+|---|---|
+| `/` | Landing page |
+| `/dashboard` | Tableau de bord de démonstration |
+| `/dashboard/create-wedding` | Assistant de création local |
+| `/dashboard/guests` | CRUD local, recherche, filtres et CSV |
+| `/invitation/[slug]` | Invitation publique de démonstration |
+| `/login`, `/register` | États préparatoires à l’authentification |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Architecture
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```text
+app/                    routes Next.js App Router
+components/
+  dashboard/            shell et surfaces du tableau de bord
+  guests/               domaine invités local + codec CSV
+  home/                 landing page
+  invitation/           invitation publique
+  shared/               états partagés
+  ui/                   primitives UI
+  wedding/              formulaire multi-étapes + schéma Zod
+lib/                    utilitaires transversaux
+tests/
+  unit/                 tests Vitest
+  e2e/                  scénarios Playwright
+docs/                   architecture, décisions et rapports d’étape
+```
 
-## Deploy on Vercel
+Les règles d’architecture et la trajectoire Supabase sont décrites dans
+[`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md). Le compte rendu de la
+stabilisation se trouve dans
+[`docs/STAGE_01_FOUNDATION.md`](docs/STAGE_01_FOUNDATION.md).
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Variables d’environnement
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Copier `.env.example` vers `.env.local`. Ne jamais exposer une clé privée dans
+une variable `NEXT_PUBLIC_*`. Les variables Supabase seront ajoutées à l’étape
+2 avec une validation typée.
+
+## Qualité et CI
+
+La CI GitHub exécute sur chaque push et pull request :
+
+1. installation reproductible avec `npm ci` ;
+2. ESLint ;
+3. contrôle TypeScript ;
+4. tests Vitest ;
+5. build Next.js ;
+6. tests E2E Chromium.
+
+Une étape n’est terminée que si tous ces contrôles passent.
+
+## Sécurité CSV
+
+Les exports invités :
+
+- échappent les virgules, guillemets et retours à la ligne ;
+- neutralisent les cellules commençant par `=`, `+`, `-` ou `@` pour éviter
+  l’exécution de formules dans un tableur ;
+- limitent les imports à 2 Mo et 1 000 invités ;
+- exigent les colonnes `lastName` et `firstName`.
+
+Les données restent locales tant que Supabase n’est pas connecté.
