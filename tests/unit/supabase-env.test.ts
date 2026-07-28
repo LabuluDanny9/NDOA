@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest"
 import {
   getOptionalSupabaseEnvironment,
   getSupabaseEnvironment,
+  isUnconfiguredDemoAllowed,
 } from "@/lib/supabase/env"
 
 const validEnvironment = {
@@ -62,5 +63,11 @@ describe("configuration Supabase", () => {
     expect(() => getSupabaseEnvironment({})).toThrow(
       /Supabase n’est pas configuré/
     )
+  })
+
+  it("autorise le prototype sans backend seulement hors production", () => {
+    expect(isUnconfiguredDemoAllowed("development")).toBe(true)
+    expect(isUnconfiguredDemoAllowed("test")).toBe(true)
+    expect(isUnconfiguredDemoAllowed("production")).toBe(false)
   })
 })

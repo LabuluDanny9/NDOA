@@ -109,3 +109,9 @@ export function getSupabaseEnvironment(
 
   return environment
 }
+
+export function isUnconfiguredDemoAllowed(
+  nodeEnvironment = process.env.NODE_ENV
+) {
+  return nodeEnvironment !== "production"
+}

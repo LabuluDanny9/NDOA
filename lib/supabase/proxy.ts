@@ -6,7 +6,10 @@ import {
   getRoleHome,
   isProtectedPath,
 } from "@/lib/auth/roles"
-import { getOptionalSupabaseEnvironment } from "@/lib/supabase/env"
+import {
+  getOptionalSupabaseEnvironment,
+  isUnconfiguredDemoAllowed,
+} from "@/lib/supabase/env"
 import type { Database } from "@/types/database.types"
 
 const AUTH_ENTRY_PATHS = ["/login", "/register", "/forgot-password"]
@@ -49,6 +52,13 @@ export async function updateSupabaseSession(request: NextRequest) {
   let response = NextResponse.next({ request })
 
   if (!environment) {
+    if (
+      isProtectedPath(request.nextUrl.pathname) &&
+      !isUnconfiguredDemoAllowed()
+    ) {
+      return redirectWithSession(request, "/login", response)
+    }
+
     return response
   }
 
