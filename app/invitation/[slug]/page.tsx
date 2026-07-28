@@ -13,8 +13,10 @@ import MusicPlayer from "@/components/invitation/MusicPlayer"
 import FloatingMenu from "@/components/invitation/FloatingMenu"
 import ShareButtons from "@/components/invitation/ShareButtons"
 import QRCodeCard from "@/components/invitation/QRCodeCard"
+import { getPublicInvitation } from "@/lib/invitations/server"
+import type { PublicInvitation } from "@/lib/invitations/types"
 
-const invitation = {
+const demoInvitation = {
   couple: {
     bride: "Ariane Mukeba",
     groom: "Samuel Ndala",
@@ -54,21 +56,51 @@ const invitation = {
   },
 }
 
+function publicInvitationToView(value: PublicInvitation) {
+  const firstEvent = value.events[0]
+  const date = value.weddingDate
+    ? `${value.weddingDate}T${value.ceremonyTime ?? "12:00:00"}+02:00`
+    : demoInvitation.couple.date
+  const location = value.settings.venueName || firstEvent?.venueName || value.settings.city || "Lieu à confirmer"
+  const address = value.settings.address || firstEvent?.address || [value.settings.city, value.settings.country].filter(Boolean).join(", ") || "Adresse à confirmer"
+  const timeline = value.events.length > 0
+    ? value.events.map((event) => ({ time: new Date(event.startsAt).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }), title: event.title, description: event.description ?? "Retrouvons-nous pour ce moment important." }))
+    : value.programs.map((program) => ({ time: new Date(program.scheduledAt).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }), title: program.title, description: program.description ?? "" }))
+  return {
+    couple: {
+      bride: value.partnerTwoName,
+      groom: value.partnerOneName,
+      tagline: value.description ?? value.settings.slogan ?? "Une célébration intime au cœur de la RDC",
+      date,
+      location,
+      address,
+    },
+    story: [{ year: "Aujourd’hui", title: value.name, description: value.description ?? "Merci de partager cette célébration avec nous." }],
+    timeline: timeline.length > 0 ? timeline : demoInvitation.timeline,
+    gallery: value.photos.length > 0 ? value.photos.map(() => "/hero.jpg") : demoInvitation.gallery,
+    gifts: value.gifts.map((gift) => ({ title: gift.name, description: gift.description ?? "Une attention pour accompagner notre nouvelle vie." })),
+    music: { ...demoInvitation.music, source: value.settings.musicSource ?? demoInvitation.music.source },
+  }
+}
+
 type InvitationPageProps = {
   params: Promise<{ slug: string }>
 }
 
 export async function generateMetadata({ params }: InvitationPageProps): Promise<Metadata> {
   const { slug } = await params
+  const published = await getPublicInvitation(slug)
 
   return {
-    title: `Invitation ${slug}`,
-    description: `Invitation au mariage de ${invitation.couple.groom} et ${invitation.couple.bride}.`,
+    title: published ? `${published.partnerOneName} & ${published.partnerTwoName}` : `Invitation ${slug}`,
+    description: published?.description ?? `Invitation au mariage pour ${slug}.`,
   }
 }
 
 export default async function InvitationPage({ params }: InvitationPageProps) {
   const { slug } = await params
+  const published = await getPublicInvitation(slug)
+  const invitation = published ? publicInvitationToView(published) : demoInvitation
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"
   const eventUrl = new URL(`/invitation/${encodeURIComponent(slug)}`, appUrl).toString()
 

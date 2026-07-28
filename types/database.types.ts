@@ -601,6 +601,10 @@ export type Database = {
         Args: { event: Json }
         Returns: Json
       }
+      get_public_invitation: {
+        Args: { target_slug: string }
+        Returns: Json
+      }
     }
     Enums: {
       app_role: AppRole
