@@ -52,11 +52,14 @@ npm run supabase:types   # génère un fichier de types à examiner
 | Route | État |
 |---|---|
 | `/` | Landing page |
-| `/dashboard` | Tableau de bord de démonstration |
+| `/dashboard` | Espace organisateur protégé quand Supabase est configuré |
 | `/dashboard/create-wedding` | Assistant de création local |
 | `/dashboard/guests` | CRUD local, recherche, filtres et CSV |
 | `/invitation/[slug]` | Invitation publique de démonstration |
-| `/login`, `/register` | États préparatoires à l’authentification |
+| `/login`, `/register` | Connexion et inscription Supabase |
+| `/forgot-password`, `/reset-password` | Récupération de compte |
+| `/admin` | Espace réservé au claim `admin` |
+| `/guest` | Espace réservé au claim `guest` |
 
 ## Architecture
 
@@ -85,6 +88,8 @@ stabilisation se trouve dans
 [`docs/STAGE_01_FOUNDATION.md`](docs/STAGE_01_FOUNDATION.md).
 La fondation Supabase est décrite dans
 [`docs/STAGE_02_SUPABASE.md`](docs/STAGE_02_SUPABASE.md).
+Les flux d’identité et les rôles sont décrits dans
+[`docs/STAGE_03_AUTHENTICATION.md`](docs/STAGE_03_AUTHENTICATION.md).
 
 ## Variables d’environnement
 
@@ -92,6 +97,11 @@ Copier `.env.example` vers `.env.local`. Les deux variables Supabase doivent
 être définies ensemble ou laissées vides. Une configuration partielle, une URL
 non HTTP(S), une clé `sb_secret_*` ou `service_role` fait échouer explicitement
 l’application. Ne jamais exposer une clé privée dans `NEXT_PUBLIC_*`.
+
+Sans configuration Supabase, le dashboard reste consultable en mode
+démonstration uniquement avec `NODE_ENV=development` ou `test`. En production,
+le proxy refuse l’accès aux espaces protégés : le déploiement échoue donc
+fermement au lieu d’exposer les données.
 
 ## Qualité et CI
 

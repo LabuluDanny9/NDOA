@@ -5,7 +5,8 @@
 NDOA utilise Next.js 16 avec l’App Router, React 19, TypeScript strict,
 Tailwind CSS 4, Base UI/shadcn, React Hook Form, Zod et Framer Motion.
 
-Les étapes 1 et 2 stabilisent le prototype et sa frontière backend :
+Les étapes 1 à 3 stabilisent le prototype, sa frontière backend et son
+identité :
 
 - les routes publiques et dashboard ont des états explicites ;
 - le formulaire mariage est typé et validé par étape ;
@@ -17,6 +18,8 @@ Les étapes 1 et 2 stabilisent le prototype et sa frontière backend :
 - les clients navigateur et serveur sont séparés et typés ;
 - le proxy Next.js rafraîchit les sessions avant le rendu ;
 - la configuration et les migrations locales sont versionnées.
+- les actions d’authentification sont exécutées côté serveur et validées ;
+- les routes sensibles appliquent les rôles issus de claims JWT vérifiés.
 
 ## Frontières de modules
 
@@ -56,6 +59,23 @@ partager une session entre deux exécutions Vercel. Le proxy appelle
 les en-têtes `private, no-store` fournis par `@supabase/ssr`. Une absence
 complète de configuration conserve temporairement le prototype local ; une
 configuration partielle échoue.
+
+## Authentification et rôles
+
+Les rôles applicatifs sont `admin`, `organizer` et `guest`.
+
+- `user_role` est lu depuis le JWT vérifié par `auth.getClaims()` ;
+- un rôle de repli `organizer` est attribué aux comptes standards confirmés ;
+- `app_metadata.user_role` est accepté car l’utilisateur ne peut pas le
+  modifier lui-même ;
+- `user_metadata.role` n’est jamais utilisé pour autoriser une action ;
+- `/admin`, `/dashboard` et `/guest` possèdent des listes de rôles distinctes ;
+- une destination `next` externe ou contenant une barre oblique inverse est
+  rejetée.
+
+L’étape 4 créera la table de rôles, le Custom Access Token Hook qui émet
+`user_role` et les politiques RLS. L’interface ne remplace jamais ces contrôles
+de base de données.
 
 L’étape 4 rendra l’isolation multi-tenant structurelle :
 
