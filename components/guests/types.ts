@@ -1,5 +1,11 @@
 export type RSVPStatus = "present" | "absent" | "pending" | "maybe"
 
+export interface GuestFilterValues {
+  category?: string
+  rsvp?: RSVPStatus
+  city?: string
+}
+
 export interface Guest {
   id: string
   lastName: string
@@ -33,4 +39,10 @@ export interface Guest {
   updatedAt: string
 }
 
-export const categories = ["Family", "Friends", "Colleagues", "VIP", "Other"]
+export const categories = [
+  "Family",
+  "Friends",
+  "Colleagues",
+  "VIP",
+  "Other",
+] as const

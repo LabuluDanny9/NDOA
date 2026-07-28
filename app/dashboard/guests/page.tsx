@@ -9,88 +9,98 @@ import GuestImport from "@/components/guests/GuestImport"
 import GuestExport from "@/components/guests/GuestExport"
 import EmptyGuestState from "@/components/guests/EmptyGuestState"
 import GuestDetailsDialog from "@/components/guests/GuestDetailsDialog"
+import GuestForm from "@/components/guests/GuestForm"
 import { mockGuests } from "@/components/guests/mockGuests"
-import { Guest } from "@/components/guests/types"
+import type { Guest, GuestFilterValues } from "@/components/guests/types"
 
 export default function GuestsPage() {
   const [guests, setGuests] = React.useState<Guest[]>(() => mockGuests)
+  const [query, setQuery] = React.useState("")
+  const [filters, setFilters] = React.useState<GuestFilterValues>({})
   const [selectedGuest, setSelectedGuest] = React.useState<Guest | null>(null)
   const [detailsOpen, setDetailsOpen] = React.useState(false)
+  const [formOpen, setFormOpen] = React.useState(false)
+  const [editingGuest, setEditingGuest] = React.useState<Guest | null>(null)
 
-  function handleAdd(g: Guest) {
-    setGuests((s) => [g, ...s])
+  function openCreateForm() {
+    setEditingGuest(null)
+    setFormOpen(true)
   }
 
-  function handleEdit(g: Guest) {
-    setGuests((s) => s.map((x) => (x.id === g.id ? g : x)))
+  function openEditForm(guest: Guest) {
+    setEditingGuest(guest)
+    setFormOpen(true)
   }
 
-  function handleDelete(g?: Guest) {
-    if (!g) return
-    setGuests((s) => s.filter((x) => x.id !== g.id))
+  function handleSave(guest: Guest) {
+    setGuests((currentGuests) => {
+      const exists = currentGuests.some((item) => item.id === guest.id)
+      return exists
+        ? currentGuests.map((item) => (item.id === guest.id ? guest : item))
+        : [guest, ...currentGuests]
+    })
+    setFormOpen(false)
+    setEditingGuest(null)
   }
 
-  function handleView(g: Guest) {
-    setSelectedGuest(g)
+  function handleDelete(guest: Guest) {
+    const confirmed = window.confirm(
+      `Supprimer ${guest.firstName} ${guest.lastName} de la liste ?`
+    )
+    if (!confirmed) return
+
+    setGuests((currentGuests) =>
+      currentGuests.filter((item) => item.id !== guest.id)
+    )
+  }
+
+  function handleDuplicate(guest: Guest) {
+    const timestamp = new Date().toISOString()
+    setGuests((currentGuests) => [
+      {
+        ...guest,
+        id: `g_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`,
+        lastName: `${guest.lastName} (copie)`,
+        inviteCode: undefined,
+        qrCode: undefined,
+        createdAt: timestamp,
+        updatedAt: timestamp,
+      },
+      ...currentGuests,
+    ])
+  }
+
+  function handleView(guest: Guest) {
+    setSelectedGuest(guest)
     setDetailsOpen(true)
   }
 
-  function handleImportPreview(rows: string[][]) {
-    // simulation: map first column to lastName, second to firstName
-    const parsed: Guest[] = rows.slice(0, 50).map((r, i) => ({
-      id: `imp-${i}-${Date.now()}`,
-      lastName: r[0] ?? `Import${i}`,
-      firstName: r[1] ?? "",
-      phone: undefined,
-      email: undefined,
-      address: "",
-      city: undefined,
-      province: undefined,
-      country: undefined,
-      gender: "other",
-      dateOfBirth: undefined,
-      category: undefined,
-      family: false,
-      friends: false,
-      colleagues: false,
-      vip: false,
-      witnesses: false,
-      bridesmaids: 0,
-      groomsmen: 0,
-      children: false,
-      tableNumber: null,
-      guestsCount: 0,
-      rsvpStatus: "pending",
-      arrivalTime: null,
-      message: undefined,
-      qrCode: undefined,
-      inviteCode: undefined,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    }))
-    setGuests((s) => [...parsed, ...s])
+  function handleImport(importedGuests: Guest[]) {
+    setGuests((currentGuests) => [...importedGuests, ...currentGuests])
   }
 
   return (
     <main className="mx-auto max-w-7xl space-y-6">
       <div className="rounded-[1rem] bg-white p-6 shadow">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <p className="text-sm uppercase text-muted-foreground">Invités</p>
+            <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground">Invités</p>
             <h1 className="text-2xl font-semibold">Gestion des invités</h1>
+            <p className="mt-2 text-sm text-slate-600">
+              Ajoutez, recherchez, filtrez et échangez votre liste au format CSV.
+            </p>
           </div>
-          <div className="flex items-center gap-4">
-            <GuestImport onPreview={handleImportPreview} />
+          <div className="flex flex-wrap items-start gap-3">
+            <GuestImport onImport={handleImport} />
             <GuestExport guests={guests} />
           </div>
         </div>
 
         <div className="mt-4">
           <GuestToolbar
-            onAdd={handleAdd}
-            onImport={() => {}}
-            onExport={() => {}}
-            onSearch={() => { /* delegated to table local search */ }}
+            onAdd={openCreateForm}
+            query={query}
+            onQueryChange={setQuery}
           />
         </div>
       </div>
@@ -98,12 +108,20 @@ export default function GuestsPage() {
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2 space-y-4">
           <div className="rounded-[1rem] bg-white p-6 shadow">
-            <GuestFilters onFilter={() => {}} />
+            <GuestFilters value={filters} onChange={setFilters} />
             <div className="mt-4">
               {guests.length === 0 ? (
-                <EmptyGuestState onAdd={() => {}} />
+                <EmptyGuestState onAdd={openCreateForm} />
               ) : (
-                <GuestTable guests={guests} onView={handleView} onEdit={handleEdit} onDelete={handleDelete} />
+                <GuestTable
+                  guests={guests}
+                  query={query}
+                  filters={filters}
+                  onView={handleView}
+                  onEdit={openEditForm}
+                  onDelete={handleDelete}
+                  onDuplicate={handleDuplicate}
+                />
               )}
             </div>
           </div>
@@ -117,6 +135,15 @@ export default function GuestsPage() {
       </div>
 
       <GuestDetailsDialog open={detailsOpen} onOpenChange={setDetailsOpen} guest={selectedGuest} />
+      <GuestForm
+        open={formOpen}
+        onOpenChange={(open) => {
+          setFormOpen(open)
+          if (!open) setEditingGuest(null)
+        }}
+        initialData={editingGuest}
+        onSave={handleSave}
+      />
     </main>
   )
 }

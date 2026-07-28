@@ -1,54 +1,39 @@
 "use client"
 
-import React from "react"
-import { Plus, Upload, Download, Filter } from "lucide-react"
+import { Plus, Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import GuestForm from "./GuestForm"
-import { Guest } from "./types"
 
 export default function GuestToolbar({
   onAdd,
-  onImport,
-  onExport,
-  onSearch,
+  query,
+  onQueryChange,
 }: {
-  onAdd?: (g: Guest) => void
-  onImport?: () => void
-  onExport?: () => void
-  onSearch?: (q: string) => void
+  onAdd: () => void
+  query: string
+  onQueryChange: (query: string) => void
 }) {
-  const [open, setOpen] = React.useState(false)
-
   return (
-    <div className="flex w-full items-center gap-3">
-      <div className="flex items-center gap-2">
-        <Button onClick={() => setOpen(true)}>
-          <Plus className="mr-2" /> Ajouter un invité
-        </Button>
-        <Button variant="outline" onClick={onImport}>
-          <Upload className="mr-2" /> Importer
-        </Button>
-        <Button variant="outline" onClick={onExport}>
-          <Download className="mr-2" /> Exporter
-        </Button>
-      </div>
+    <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center">
+      <Button type="button" onClick={onAdd}>
+        <Plus className="mr-2 h-4 w-4" aria-hidden="true" />
+        Ajouter un invité
+      </Button>
 
-      <div className="ml-auto flex items-center gap-2">
+      <div className="relative sm:ml-auto sm:w-full sm:max-w-md">
+        <Search
+          className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+          aria-hidden="true"
+        />
         <Input
-          placeholder="Rechercher par nom, téléphone, email..."
-          onChange={(e) => onSearch?.(e.target.value)}
+          type="search"
+          value={query}
+          className="pl-9"
+          placeholder="Rechercher par nom, téléphone ou email…"
+          aria-label="Rechercher un invité"
+          onChange={(event) => onQueryChange(event.target.value)}
         />
       </div>
-
-      <GuestForm
-        open={open}
-        onOpenChange={setOpen}
-        onSave={(guest) => {
-          setOpen(false)
-          onAdd?.(guest)
-        }}
-      />
     </div>
   )
 }
