@@ -114,6 +114,8 @@ Le dashboard KPI, ses agrégats et ses graphiques sont décrits dans
 [`docs/STAGE_10_DASHBOARD.md`](docs/STAGE_10_DASHBOARD.md).
 La galerie privée, son upload compressé et ses URLs signées sont décrits dans
 [`docs/STAGE_11_GALLERY.md`](docs/STAGE_11_GALLERY.md).
+La file de communication, les templates et les statuts de livraison sont décrits dans
+[`docs/STAGE_12_NOTIFICATIONS.md`](docs/STAGE_12_NOTIFICATIONS.md).
 
 ## Variables d’environnement
 

@@ -68,6 +68,17 @@ test("the gallery renders its empty state in demo mode", async ({ page }) => {
   await expect(page.getByText("Ajouter des photos", { exact: true })).toBeVisible()
 })
 
+test("the invitation workspace queues a demo message", async ({ page }) => {
+  await page.goto("/dashboard/invitations")
+
+  await expect(page.getByRole("heading", { name: "Envoi des invitations" })).toBeVisible()
+  await page.getByLabel("Destinataire").fill("invite@example.com")
+  await page.getByLabel("Message").fill("À très bientôt !")
+  await page.getByRole("button", { name: "Mettre en file d’envoi" }).click()
+  await expect(page.getByText("Message mis en file")).toBeVisible()
+  await expect(page.getByText("invite@example.com")).toBeVisible()
+})
+
 test("the guest dashboard renders its management table", async ({ page }) => {
   await page.goto("/dashboard/guests")
 
