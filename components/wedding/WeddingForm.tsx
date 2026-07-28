@@ -1,7 +1,7 @@
 ﻿"use client"
 
 import { AnimatePresence, motion } from "framer-motion"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { type SubmitHandler, useForm, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { ArrowLeft, ArrowRight } from "lucide-react"
@@ -20,6 +20,23 @@ import {
   weddingFormSchema,
   type WeddingFormValues,
 } from "@/components/wedding/wedding-form-schema"
+import { useToast } from "@/components/ui/toast"
+import {
+  createWedding,
+  updateWedding,
+  WeddingClientError,
+} from "@/lib/weddings/client"
+import {
+  createLocalWedding,
+  updateLocalWedding,
+} from "@/lib/weddings/local-store"
+
+interface WeddingFormProps {
+  weddingId?: string
+  initialValues?: WeddingFormValues
+  localMode?: boolean
+  onSaved?: (weddingId: string) => void
+}
 
 const stepLabels = [
   "Informations générales",
@@ -31,13 +48,14 @@ const stepLabels = [
   "Personnalisation",
 ] as const
 
-export default function WeddingForm() {
+export default function WeddingForm({ weddingId, initialValues, localMode = false, onSaved }: WeddingFormProps) {
   const [currentStep, setCurrentStep] = useState(0)
   const [submitted, setSubmitted] = useState(false)
+  const { toast } = useToast()
 
   const form = useForm<WeddingFormValues>({
     resolver: zodResolver(weddingFormSchema),
-    defaultValues: defaultWeddingValues,
+    defaultValues: initialValues ?? defaultWeddingValues,
     mode: "onTouched",
   })
 
@@ -46,9 +64,14 @@ export default function WeddingForm() {
     handleSubmit,
     setValue,
     control,
+    reset,
     trigger,
     formState: { errors, isSubmitting },
   } = form
+
+  useEffect(() => {
+    if (initialValues) reset(initialValues)
+  }, [initialValues, reset])
 
   const [weddingName, groomName, brideName] = useWatch({
     control,
@@ -115,8 +138,40 @@ export default function WeddingForm() {
     setCurrentStep((value) => Math.max(0, value - 1))
   }
 
-  const onSubmit: SubmitHandler<WeddingFormValues> = () => {
-    setSubmitted(true)
+  const onSubmit: SubmitHandler<WeddingFormValues> = async (values) => {
+    setSubmitted(false)
+    try {
+      let savedId = weddingId
+      if (weddingId && localMode) {
+        const updated = updateLocalWedding(weddingId, values)
+        if (!updated) throw new Error("Mariage local introuvable.")
+      } else {
+        try {
+          const saved = weddingId
+            ? await updateWedding(weddingId, values)
+            : await createWedding(values)
+          savedId = saved.id
+        } catch (error) {
+          if (!(error instanceof WeddingClientError) || error.code !== "SUPABASE_NOT_CONFIGURED") throw error
+          const saved = weddingId ? updateLocalWedding(weddingId, values) : createLocalWedding(values)
+          if (!saved) throw new Error("Mariage local introuvable.")
+          savedId = saved.id
+        }
+      }
+      setSubmitted(true)
+      toast({
+        title: weddingId ? "Mariage enregistré" : "Mariage créé",
+        description: "Les informations sont prêtes à être gérées depuis votre espace.",
+        variant: "success",
+      })
+      if (savedId) onSaved?.(savedId)
+    } catch (error) {
+      toast({
+        title: "Enregistrement impossible",
+        description: error instanceof WeddingClientError ? error.message : "Vérifiez les informations puis réessayez.",
+        variant: "error",
+      })
+    }
   }
 
   const preview = weddingName || "Votre mariage"
@@ -203,7 +258,7 @@ export default function WeddingForm() {
             <p className="mt-2 text-sm text-slate-600">{couple}</p>
             <div className="mt-6 grid gap-3">
               <div className="rounded-3xl bg-slate-100 px-4 py-3 text-sm text-slate-700">
-                <span className="font-semibold">Entreprise</span> : NDOA
+                <span className="font-semibold">Persistance</span> : {localMode ? "locale (démo)" : "API Supabase"}
               </div>
               <div className="rounded-3xl bg-slate-100 px-4 py-3 text-sm text-slate-700">
                 <span className="font-semibold">Étape actuelle</span> : {stepLabels[currentStep]}
@@ -214,15 +269,17 @@ export default function WeddingForm() {
           <div className="rounded-[1.5rem] bg-white p-6 shadow-sm">
             <p className="text-sm uppercase tracking-[0.24em] text-muted-foreground">Enregistré en local</p>
             <p className="mt-3 text-sm text-slate-600">
-              Les données sont conservées dans l’état React. L’architecture est prête pour une future intégration Supabase.
+              {localMode
+                ? "Ce mariage est enregistré dans le navigateur pour le mode démonstration."
+                : "Les données sont validées puis envoyées à l’API Supabase sécurisée."}
             </p>
           </div>
         </aside>
       </CardContent>
 
       <CardFooter className="flex flex-col gap-2 bg-slate-50 px-8 py-6 text-sm text-slate-600 sm:flex-row sm:items-center sm:justify-between">
-        <p>Prêt pour une connexion backend dans un second temps.</p>
-        <p>Formulaire entièrement local, sans envoi externe.</p>
+        <p>{submitted ? "Modifications enregistrées." : "Enregistrement sécurisé et réversible."}</p>
+        <p>{localMode ? "Mode démonstration local." : "API REST multi-tenant."}</p>
       </CardFooter>
     </Card>
   )

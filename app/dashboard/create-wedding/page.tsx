@@ -1,8 +1,10 @@
 ﻿"use client"
 
+import { useRouter } from "next/navigation"
 import WeddingForm from "@/components/wedding/WeddingForm"
 
 export default function CreateWeddingPage() {
+  const router = useRouter()
   return (
     <main className="mx-auto min-h-screen max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <section className="mb-8 rounded-[2rem] bg-white p-8 shadow-[0_24px_80px_rgba(15,23,42,0.08)]">
@@ -15,7 +17,7 @@ export default function CreateWeddingPage() {
         </div>
       </section>
 
-      <WeddingForm />
+      <WeddingForm onSaved={() => router.push("/dashboard/weddings")} />
     </main>
   )
 }
