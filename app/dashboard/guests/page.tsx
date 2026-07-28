@@ -12,8 +12,10 @@ import GuestDetailsDialog from "@/components/guests/GuestDetailsDialog"
 import GuestForm from "@/components/guests/GuestForm"
 import { mockGuests } from "@/components/guests/mockGuests"
 import type { Guest, GuestFilterValues } from "@/components/guests/types"
+import { useToast } from "@/components/ui/toast"
 
 export default function GuestsPage() {
+  const { toast } = useToast()
   const [guests, setGuests] = React.useState<Guest[]>(() => mockGuests)
   const [query, setQuery] = React.useState("")
   const [filters, setFilters] = React.useState<GuestFilterValues>({})
@@ -33,6 +35,7 @@ export default function GuestsPage() {
   }
 
   function handleSave(guest: Guest) {
+    const isEditing = guests.some((item) => item.id === guest.id)
     setGuests((currentGuests) => {
       const exists = currentGuests.some((item) => item.id === guest.id)
       return exists
@@ -41,6 +44,11 @@ export default function GuestsPage() {
     })
     setFormOpen(false)
     setEditingGuest(null)
+    toast({
+      title: isEditing ? "Invité modifié" : "Invité ajouté",
+      description: `${guest.firstName} ${guest.lastName}`,
+      variant: "success",
+    })
   }
 
   function handleDelete(guest: Guest) {
@@ -52,6 +60,10 @@ export default function GuestsPage() {
     setGuests((currentGuests) =>
       currentGuests.filter((item) => item.id !== guest.id)
     )
+    toast({
+      title: "Invité supprimé",
+      description: `${guest.firstName} ${guest.lastName}`,
+    })
   }
 
   function handleDuplicate(guest: Guest) {
@@ -68,6 +80,11 @@ export default function GuestsPage() {
       },
       ...currentGuests,
     ])
+    toast({
+      title: "Invité dupliqué",
+      description: `Une copie de ${guest.firstName} ${guest.lastName} a été créée.`,
+      variant: "success",
+    })
   }
 
   function handleView(guest: Guest) {
@@ -77,6 +94,11 @@ export default function GuestsPage() {
 
   function handleImport(importedGuests: Guest[]) {
     setGuests((currentGuests) => [...importedGuests, ...currentGuests])
+    toast({
+      title: "Import terminé",
+      description: `${importedGuests.length} invité${importedGuests.length > 1 ? "s" : ""} ajouté${importedGuests.length > 1 ? "s" : ""}.`,
+      variant: "success",
+    })
   }
 
   return (
