@@ -74,6 +74,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Validate migrations in PostgreSQL WASM
+        run: npm run supabase:validate
+
       - name: Start local Supabase
         run: npm run supabase:start
 

@@ -118,7 +118,10 @@ create policy weddings_select_members
 on public.weddings
 for select
 to authenticated
-using ((select private.can_view_wedding(id)));
+using (
+  owner_id = (select auth.uid())
+  or (select private.can_view_wedding(id))
+);
 
 create policy weddings_insert_owner
 on public.weddings

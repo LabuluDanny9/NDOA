@@ -126,6 +126,8 @@ Tests disponibles :
 
 - 46 contrôles Vitest ciblés sur l’inventaire, RLS, sécurité QR, Auth Hook et
   types d’insertion ;
+- `npm run supabase:validate` exécute les six migrations dans PostgreSQL WASM,
+  vérifie les 19 tables et prouve l’isolation A/B par RLS ;
 - 43 assertions pgTAP sur les tables, RLS, index, absence de policy anonyme et
   bucket privé ;
 - job CI `database` : démarrage Supabase, lint PostgreSQL et pgTAP.
@@ -137,9 +139,10 @@ Windows 10 Pro ne possède toutefois ni Docker/Podman, ni WSL, ni `winget`.
 L’activation de WSL/Docker modifierait les composants Windows et demanderait
 probablement un redémarrage ; elle n’a pas été déclenchée implicitement.
 
-Par conséquent, les migrations, `supabase db lint`, pgTAP et la régénération
-réelle des types doivent encore être exécutés sur un moteur Supabase. Il ne
-faut pas ouvrir l’étape 5 tant que ce contrôle connecté n’est pas vert.
+Les migrations et le smoke test RLS sont déjà exécutables sans Docker via
+PGlite. Le lint `supabase db lint`, pgTAP et la régénération réelle des types
+restent à exécuter sur le moteur Supabase officiel dès qu’il sera disponible ;
+ils sont conservés dans le job CI `database`.
 
 Commandes à exécuter après installation de Docker Desktop ou Podman :
 

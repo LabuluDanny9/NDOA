@@ -44,6 +44,7 @@ npm run supabase:status  # affiche URL et clés locales
 npm run supabase:reset   # rejoue migrations et seed
 npm run supabase:lint    # analyse le schéma PostgreSQL
 npm run supabase:test    # tests pgTAP du schéma et de RLS
+npm run supabase:validate # validation PostgreSQL WASM + smoke test RLS
 npm run supabase:types   # génère un fichier de types à examiner
 ```
 

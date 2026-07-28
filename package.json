@@ -17,8 +17,9 @@
     "supabase:reset": "supabase db reset",
     "supabase:lint": "supabase db lint",
     "supabase:test": "supabase test db",
+    "supabase:validate": "node scripts/validate-supabase-migrations.mjs",
     "supabase:types": "supabase gen types typescript --local > types/database.types.generated.ts",
-    "check": "npm run lint && npm run typecheck && npm test && npm run build"
+    "check": "npm run lint && npm run typecheck && npm test && npm run supabase:validate && npm run build"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
@@ -40,6 +41,7 @@
     "zod": "^3.0.0"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.5.4",
     "@playwright/test": "^1.62.0",
     "@tailwindcss/postcss": "^4",
     "@testing-library/jest-dom": "^7.0.0",
