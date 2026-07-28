@@ -1,0 +1,2 @@
+-- Les données de démonstration seront ajoutées avec le schéma métier.
+-- Ce fichier reste déterministe afin que `supabase db reset` soit reproductible.
