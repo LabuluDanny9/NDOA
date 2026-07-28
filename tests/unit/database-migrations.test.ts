@@ -11,6 +11,7 @@ const migrationFiles = [
   "20260728083000_integrity_and_activity.sql",
   "20260728084000_row_level_security.sql",
   "20260728090000_public_invitation_projection.sql",
+  "20260728091000_public_rsvp.sql",
 ]
 
 const migrations = migrationFiles
@@ -109,5 +110,12 @@ describe("migrations Supabase", () => {
     expect(migrations).toContain("grant execute on function public.get_public_invitation(text) to anon, authenticated")
     expect(migrations).toContain("where wedding.slug = target_slug and wedding.status = 'published'")
     expect(migrations).toContain("never returns guests")
+  })
+
+  it("expose un RPC RSVP idempotent et borné", () => {
+    expect(migrations).toContain("create or replace function public.submit_public_rsvp")
+    expect(migrations).toContain("on conflict (guest_id) do update")
+    expect(migrations).toContain("grant execute on function public.submit_public_rsvp")
+    expect(migrations).toContain("never returns guest contact data")
   })
 })

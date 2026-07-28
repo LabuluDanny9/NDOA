@@ -108,6 +108,8 @@ Le module invités, ses formats d’import/export et ses QR codes sont décrits
 dans [`docs/STAGE_07_GUESTS.md`](docs/STAGE_07_GUESTS.md).
 La projection publique et l’invitation par slug sont décrites dans
 [`docs/STAGE_08_INVITATION.md`](docs/STAGE_08_INVITATION.md).
+Le flux RSVP public et son RPC idempotent sont décrits dans
+[`docs/STAGE_09_RSVP.md`](docs/STAGE_09_RSVP.md).
 
 ## Variables d’environnement
 

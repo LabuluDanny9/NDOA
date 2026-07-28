@@ -1,6 +1,6 @@
 begin;
 
-select plan(44);
+select plan(45);
 
 select ok(
   to_regclass(format('public.%I', table_name)) is not null,
@@ -130,6 +130,11 @@ select ok(
 select ok(
   to_regprocedure('public.get_public_invitation(text)') is not null,
   'public invitation projection exists'
+);
+
+select ok(
+  to_regprocedure('public.submit_public_rsvp(text, text, text, public.rsvp_response, smallint, text)') is not null,
+  'public RSVP function exists'
 );
 
 select * from finish();

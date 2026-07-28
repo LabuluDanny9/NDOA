@@ -84,6 +84,10 @@ test("the invitation QR contains the resolved Next.js slug", async ({ page }) =>
   await expect(
     page.getByLabel(/QR code pour .*\/invitation\/demo/),
   ).toBeVisible()
+  await page.getByLabel("Nom complet").fill("Invité Démo")
+  await page.getByLabel("Email").fill("invite.demo@example.com")
+  await page.getByRole("button", { name: "Envoyer ma réponse" }).click()
+  await expect(page.getByText("Merci pour votre réponse !")).toBeVisible()
 })
 
 test("authentication entry points expose complete account flows", async ({
