@@ -108,7 +108,7 @@ export default function Features() {
         <div className="mx-auto max-w-3xl text-center">
           <h2 className="font-heading text-3xl font-semibold">Tout ce dont vous avez besoin pour organiser votre mariage</h2>
           <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-            NDOA simplifie la gestion de vos invitations, de la création jusqu'à la confirmation des invités.
+            NDOA simplifie la gestion de vos invitations, de la création jusqu’à la confirmation des invités.
           </p>
         </div>
 

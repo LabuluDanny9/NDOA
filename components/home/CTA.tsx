@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { motion } from "framer-motion"
 import { CheckCircle2 } from "lucide-react"
 
@@ -21,6 +22,7 @@ const features = [
 export default function CTA() {
   return (
     <motion.section
+      id="start"
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, amount: 0.3 }}
@@ -43,16 +45,17 @@ export default function CTA() {
 
       <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:justify-center">
         <Button
+          asChild
           size="lg"
           className={cn(
             "rounded-full bg-gradient-to-r from-amber-400 to-amber-600 text-white shadow-lg shadow-amber-500/20",
             "hover:from-amber-500 hover:to-amber-700"
           )}
         >
-          Créer mon mariage
+          <Link href="/register">Créer mon mariage</Link>
         </Button>
-        <Button size="lg" variant="outline" className="rounded-full px-8 text-foreground">
-          Voir une démonstration
+        <Button asChild size="lg" variant="outline" className="rounded-full px-8 text-foreground">
+          <Link href="#demo">Voir une démonstration</Link>
         </Button>
       </div>
 

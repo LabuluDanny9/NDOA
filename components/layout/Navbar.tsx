@@ -56,8 +56,8 @@ export default function Navbar() {
               <Link href="#features" className="text-sm font-medium text-foreground/80 hover:text-foreground">
                 Fonctionnalités
               </Link>
-              <Link href="#pricing" className="text-sm font-medium text-foreground/80 hover:text-foreground">
-                Tarifs
+              <Link href="#start" className="text-sm font-medium text-foreground/80 hover:text-foreground">
+                Commencer
               </Link>
               <Link href="#demo" className="text-sm font-medium text-foreground/80 hover:text-foreground">
                 Démonstration
@@ -72,6 +72,7 @@ export default function Navbar() {
                 </Button>
 
                 <Button
+                  asChild
                   size="sm"
                   className={cn(
                     "bg-gradient-to-r from-amber-400 to-amber-600 text-white shadow-md",
@@ -79,7 +80,7 @@ export default function Navbar() {
                     "px-4 py-1.5"
                   )}
                 >
-                  Créer mon mariage
+                  <Link href="/register">Créer mon mariage</Link>
                 </Button>
               </div>
 
@@ -110,8 +111,8 @@ export default function Navbar() {
                       <Link href="#features" className="text-base font-medium">
                         Fonctionnalités
                       </Link>
-                      <Link href="#pricing" className="text-base font-medium">
-                        Tarifs
+                      <Link href="#start" className="text-base font-medium">
+                        Commencer
                       </Link>
                       <Link href="#demo" className="text-base font-medium">
                         Démonstration
@@ -125,9 +126,10 @@ export default function Navbar() {
                         </Button>
 
                             <Button
+                              asChild
                               className="w-full bg-amber-500 text-white hover:bg-amber-600 px-4 py-2"
                             >
-                              Créer mon mariage
+                              <Link href="/register">Créer mon mariage</Link>
                             </Button>
 
                         <div className="flex justify-end">

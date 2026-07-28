@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import Image from "next/image"
+import Link from "next/link"
 import { motion } from "framer-motion"
 import {
   Check,
@@ -10,6 +11,7 @@ import {
   MapPin,
   Clock,
   QrCode,
+  type LucideIcon,
 } from "lucide-react"
 
 import { Card, CardContent } from "@/components/ui/card"
@@ -23,7 +25,7 @@ const float = {
   transition: { duration: 4, repeat: Infinity },
 }
 
-function FeatureItem({ Icon, children }: { Icon: React.ComponentType<any>; children: React.ReactNode }) {
+function FeatureItem({ Icon, children }: { Icon: LucideIcon; children: React.ReactNode }) {
   return (
     <li className="flex items-start gap-3">
       <span className="mt-1 inline-flex h-8 w-8 items-center justify-center rounded-full bg-amber-400 text-white">
@@ -58,7 +60,7 @@ export default function Demo() {
   const { days, hours, minutes } = useCountdown(targetDate)
 
   return (
-    <section aria-label="Démonstration" className="bg-[#FAF8F5] py-16">
+    <section id="demo" aria-label="Démonstration" className="bg-[#FAF8F5] py-16">
       <div className="container mx-auto px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-10 lg:grid-cols-2 items-center">
           {/* Left column */}
@@ -79,11 +81,12 @@ export default function Demo() {
 
             <div className="mt-6">
               <Button
+                asChild
                 size="lg"
                 className={cn("bg-gradient-to-r from-amber-400 to-amber-600 text-white px-4 py-2 rounded-md shadow-md")}
                 aria-label="Voir une invitation"
               >
-                Voir une invitation
+                <Link href="/invitation/emma-louis">Voir une invitation</Link>
               </Button>
             </div>
           </div>

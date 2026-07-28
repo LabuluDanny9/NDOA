@@ -11,7 +11,7 @@ export default function Footer() {
           <div className="space-y-4">
             <div className="text-2xl font-semibold">NDOA</div>
             <p className="max-w-sm text-sm leading-7 text-muted-foreground">
-              NDOA simplifie la création d'invitations numériques de mariage avec RSVP intelligent.
+              NDOA simplifie la création d’invitations numériques de mariage avec RSVP intelligent.
             </p>
           </div>
 
@@ -24,8 +24,8 @@ export default function Footer() {
               <Link href="#features" className="block hover:text-foreground">
                 Fonctionnalités
               </Link>
-              <Link href="#pricing" className="block hover:text-foreground">
-                Tarifs
+              <Link href="#start" className="block hover:text-foreground">
+                Commencer
               </Link>
               <Link href="#demo" className="block hover:text-foreground">
                 Démonstration
@@ -46,7 +46,7 @@ export default function Footer() {
                 Confidentialité
               </Link>
               <Link href="/terms" className="block hover:text-foreground">
-                Conditions d'utilisation
+                Conditions d’utilisation
               </Link>
             </nav>
           </div>

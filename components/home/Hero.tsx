@@ -3,7 +3,6 @@
 import * as React from "react"
 import Link from "next/link"
 import { motion } from "framer-motion"
-import Image from "next/image"
 
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
@@ -56,7 +55,7 @@ export default function Hero() {
 					<div className="max-w-2xl">
 						<motion.div variants={item} className="inline-flex items-center rounded-full bg-white/10 px-3 py-1 text-sm text-amber-100">
 							<Sparkles className="mr-2 size-4 text-amber-200" />
-							<span>✨ La nouvelle génération d'invitations de mariage</span>
+							<span>✨ La nouvelle génération d’invitations de mariage</span>
 						</motion.div>
 
 						<motion.h1 variants={item} className="mt-6 text-3xl font-heading font-semibold leading-tight text-white sm:text-4xl lg:text-5xl">
@@ -117,11 +116,19 @@ export default function Hero() {
 	)
 }
 
-function StatCard({ icon, title, value }: { icon: React.ReactNode; title: string; value: string }) {
+function StatCard({
+	icon,
+	title,
+	value,
+}: {
+	icon: React.ReactElement<{ className?: string }>
+	title: string
+	value: string
+}) {
 	return (
 		<div className="flex items-center gap-3 rounded-lg bg-white/6 p-3 text-white">
 			<div className="flex h-10 w-10 items-center justify-center rounded-md bg-white/10">
-				{React.cloneElement(icon as any, { className: "size-5 text-amber-200" })}
+				{React.cloneElement(icon, { className: "size-5 text-amber-200" })}
 			</div>
 			<div>
 				<div className="text-sm font-medium">{title}</div>
@@ -131,7 +138,15 @@ function StatCard({ icon, title, value }: { icon: React.ReactNode; title: string
 	)
 }
 
-function StatCardAnimated({ icon, title, value }: { icon: React.ReactNode; title: string; value: string }) {
+function StatCardAnimated({
+	icon,
+	title,
+	value,
+}: {
+	icon: React.ReactElement<{ className?: string }>
+	title: string
+	value: string
+}) {
 	return (
 		<motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }} className="rounded-lg">
 			<StatCard icon={icon} title={title} value={value} />

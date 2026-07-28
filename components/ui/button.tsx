@@ -47,20 +47,24 @@ function Button({
   size = "default",
   asChild = false,
   children,
+  render,
+  nativeButton,
   ...props
 }: ButtonPrimitive.Props & VariantProps<typeof buttonVariants> & { asChild?: boolean }) {
   const classes = cn(buttonVariants({ variant, size, className }))
-
-  // If `asChild` is used, clone the single child element and apply our classes
-  if (asChild && React.isValidElement(children)) {
-    return React.cloneElement(children as React.ReactElement, {
-      className: cn(classes, (children as any).props?.className),
-    } as any)
-  }
+  const childRender = asChild
+    ? (React.Children.only(children) as React.ReactElement)
+    : render
 
   return (
-    <ButtonPrimitive data-slot="button" className={classes} {...props}>
-      {children}
+    <ButtonPrimitive
+      data-slot="button"
+      className={classes}
+      render={childRender}
+      nativeButton={asChild ? false : nativeButton}
+      {...props}
+    >
+      {asChild ? undefined : children}
     </ButtonPrimitive>
   )
 }
