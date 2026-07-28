@@ -2,13 +2,12 @@
 
 NDOA est une application Next.js de gestion de mariages et d’invitations
 numériques. Le dépôt contient une fondation UI stabilisée et une couche
-Supabase SSR prête à recevoir les domaines métier :
+Supabase SSR avec schéma multi-tenant versionné :
 landing page, tableau de bord de démonstration, assistant de création de
 mariage, gestion locale des invités et invitation publique.
 
-L’authentification et l’isolation multi-tenant seront introduites
-progressivement aux étapes suivantes. Les pages qui en dépendent indiquent
-explicitement qu’elles sont planifiées ; elles ne simulent pas une connexion.
+L’authentification et les frontières RLS sont présentes. Les écrans métier
+restent locaux jusqu’à leur connexion aux routes API lors des étapes suivantes.
 
 ## Prérequis
 
@@ -44,6 +43,7 @@ npm run supabase:start   # démarre la pile locale (Docker/Podman requis)
 npm run supabase:status  # affiche URL et clés locales
 npm run supabase:reset   # rejoue migrations et seed
 npm run supabase:lint    # analyse le schéma PostgreSQL
+npm run supabase:test    # tests pgTAP du schéma et de RLS
 npm run supabase:types   # génère un fichier de types à examiner
 ```
 
@@ -76,6 +76,7 @@ components/
 lib/                    utilitaires transversaux
   supabase/             environnement, clients SSR et proxy de session
 supabase/               configuration, migrations et seed locaux
+  tests/database/        contrats pgTAP du schéma et de RLS
 tests/
   unit/                 tests Vitest
   e2e/                  scénarios Playwright
@@ -90,6 +91,8 @@ La fondation Supabase est décrite dans
 [`docs/STAGE_02_SUPABASE.md`](docs/STAGE_02_SUPABASE.md).
 Les flux d’identité et les rôles sont décrits dans
 [`docs/STAGE_03_AUTHENTICATION.md`](docs/STAGE_03_AUTHENTICATION.md).
+Le schéma, les contraintes et les policies sont décrits dans
+[`docs/STAGE_04_DATABASE.md`](docs/STAGE_04_DATABASE.md).
 
 ## Variables d’environnement
 

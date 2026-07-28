@@ -5,7 +5,7 @@
 NDOA utilise Next.js 16 avec l’App Router, React 19, TypeScript strict,
 Tailwind CSS 4, Base UI/shadcn, React Hook Form, Zod et Framer Motion.
 
-Les étapes 1 à 3 stabilisent le prototype, sa frontière backend et son
+Les étapes 1 à 4 stabilisent le prototype, sa frontière backend, son
 identité :
 
 - les routes publiques et dashboard ont des états explicites ;
@@ -20,6 +20,9 @@ identité :
 - la configuration et les migrations locales sont versionnées.
 - les actions d’authentification sont exécutées côté serveur et validées ;
 - les routes sensibles appliquent les rôles issus de claims JWT vérifiés.
+- les 19 tables métier demandées sont versionnées avec contraintes et index ;
+- toutes les tables exposées activent RLS sans policy anonyme ;
+- les médias utilisent un bucket privé partitionné par `wedding_id`.
 
 ## Frontières de modules
 
@@ -77,7 +80,7 @@ L’étape 4 créera la table de rôles, le Custom Access Token Hook qui émet
 `user_role` et les politiques RLS. L’interface ne remplace jamais ces contrôles
 de base de données.
 
-L’étape 4 rendra l’isolation multi-tenant structurelle :
+L’étape 4 rend l’isolation multi-tenant structurelle :
 
 - `weddings` possède un propriétaire immuable ;
 - `wedding_members` porte les collaborations et rôles locaux ;
@@ -85,6 +88,35 @@ L’étape 4 rendra l’isolation multi-tenant structurelle :
 - RLS est activée sur toutes les tables et tous les buckets exposés ;
 - les tests doivent prouver qu’un utilisateur du mariage A ne peut ni lire ni
   modifier les données du mariage B.
+
+```mermaid
+erDiagram
+  AUTH_USERS ||--|| USERS : "compte"
+  USERS ||--|| PROFILES : "profil"
+  USERS ||--|| USER_ROLES : "rôle JWT"
+  USERS ||--o{ WEDDINGS : "propriétaire"
+  USERS ||--o{ WEDDING_MEMBERS : "collabore"
+  WEDDINGS ||--o{ WEDDING_MEMBERS : "équipe"
+  WEDDINGS ||--o{ EVENTS : "contient"
+  EVENTS ||--o{ PROGRAMS : "détaille"
+  WEDDINGS ||--o{ GUESTS : "invite"
+  GUEST_GROUPS ||--o{ GUESTS : "regroupe"
+  GUEST_TABLES ||--o{ GUESTS : "place"
+  GUESTS ||--o| RSVPS : "répond"
+  WEDDINGS ||--o{ GALLERY : "publie"
+  GALLERY ||--o{ ALBUMS : "classe"
+  ALBUMS ||--o{ PHOTOS : "contient"
+  WEDDINGS ||--o{ MESSAGES : "envoie"
+  WEDDINGS ||--o{ NOTIFICATIONS : "signale"
+  WEDDINGS ||--o{ GIFT_REGISTRY : "propose"
+  WEDDINGS ||--o{ QR_CODES : "sécurise"
+  WEDDINGS ||--o{ ACTIVITY_LOGS : "audite"
+```
+
+Les clés composites `(id, wedding_id)` empêchent de rattacher un invité, un
+album, une photo, un RSVP ou un message à un objet appartenant à un autre
+mariage. Les fonctions `security definer` utilisées par RLS vivent dans le
+schéma non exposé `private` avec un `search_path` vide.
 
 ## Frontière publique
 
