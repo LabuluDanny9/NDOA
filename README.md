@@ -102,6 +102,8 @@ Le schéma, les contraintes et les policies sont décrits dans
 [`docs/STAGE_04_DATABASE.md`](docs/STAGE_04_DATABASE.md).
 Les contrats REST sont décrits dans
 [`docs/STAGE_05_API.md`](docs/STAGE_05_API.md).
+Le cycle de vie des mariages est décrit dans
+[`docs/STAGE_06_WEDDING.md`](docs/STAGE_06_WEDDING.md).
 
 ## Variables d’environnement
 

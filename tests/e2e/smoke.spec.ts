@@ -22,6 +22,33 @@ test("the API fails closed when Supabase is not configured", async ({ request })
   expect(response.headers()["x-request-id"]).toBeTruthy()
 })
 
+test("the wedding manager exposes draft publication and duplication in demo mode", async ({ page }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem("ndoa:weddings:v1", JSON.stringify([{
+      id: "00000000-0000-0000-0000-000000000099",
+      name: "NDOA Démo",
+      slug: "ndoa-demo",
+      partnerOneName: "Danny",
+      partnerTwoName: "Julie",
+      weddingDate: "2026-08-15",
+      status: "draft",
+      description: null,
+      timezone: "Africa/Lubumbashi",
+      createdAt: "2026-07-28T00:00:00.000Z",
+      updatedAt: "2026-07-28T00:00:00.000Z",
+      source: "local",
+      formValues: { weddingName: "NDOA Démo", groomName: "Danny", brideName: "Julie" },
+    }]))
+  })
+  await page.goto("/dashboard/weddings")
+  await expect(page.getByRole("heading", { name: "Mes mariages" })).toBeVisible()
+  await expect(page.getByText("NDOA Démo")).toBeVisible()
+  await page.getByRole("button", { name: "Publier" }).click()
+  await expect(page.getByText("Mariage publié")).toBeVisible()
+  await page.getByRole("button", { name: "Dupliquer" }).first().click()
+  await expect(page.getByText("Mariage dupliqué")).toBeVisible()
+})
+
 test("the guest dashboard renders its management table", async ({ page }) => {
   await page.goto("/dashboard/guests")
 
