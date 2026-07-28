@@ -1,14 +1,14 @@
 # NDOA
 
 NDOA est une application Next.js de gestion de mariages et d’invitations
-numériques. Le dépôt contient actuellement une fondation UI stabilisée :
+numériques. Le dépôt contient une fondation UI stabilisée et une couche
+Supabase SSR prête à recevoir les domaines métier :
 landing page, tableau de bord de démonstration, assistant de création de
 mariage, gestion locale des invités et invitation publique.
 
-La persistance, l’authentification et l’isolation multi-tenant seront
-introduites progressivement avec Supabase à partir de l’étape 2. Les pages qui
-en dépendent indiquent explicitement qu’elles sont planifiées ; elles ne
-simulent pas une connexion backend.
+L’authentification et l’isolation multi-tenant seront introduites
+progressivement aux étapes suivantes. Les pages qui en dépendent indiquent
+explicitement qu’elles sont planifiées ; elles ne simulent pas une connexion.
 
 ## Prérequis
 
@@ -16,6 +16,7 @@ simulent pas une connexion backend.
 - npm 10 ou plus récent ;
 - Git ;
 - Chromium Playwright pour les tests E2E.
+- Docker Desktop ou Podman uniquement pour la pile Supabase locale.
 
 ## Installation
 
@@ -39,6 +40,11 @@ npm run test:watch   # Vitest en mode interactif
 npm run test:e2e     # tests Playwright
 npm run build        # build de production Next.js
 npm run check        # lint + typecheck + tests unitaires + build
+npm run supabase:start   # démarre la pile locale (Docker/Podman requis)
+npm run supabase:status  # affiche URL et clés locales
+npm run supabase:reset   # rejoue migrations et seed
+npm run supabase:lint    # analyse le schéma PostgreSQL
+npm run supabase:types   # génère un fichier de types à examiner
 ```
 
 ## Routes principales
@@ -65,6 +71,8 @@ components/
   ui/                   primitives UI
   wedding/              formulaire multi-étapes + schéma Zod
 lib/                    utilitaires transversaux
+  supabase/             environnement, clients SSR et proxy de session
+supabase/               configuration, migrations et seed locaux
 tests/
   unit/                 tests Vitest
   e2e/                  scénarios Playwright
@@ -75,12 +83,15 @@ Les règles d’architecture et la trajectoire Supabase sont décrites dans
 [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md). Le compte rendu de la
 stabilisation se trouve dans
 [`docs/STAGE_01_FOUNDATION.md`](docs/STAGE_01_FOUNDATION.md).
+La fondation Supabase est décrite dans
+[`docs/STAGE_02_SUPABASE.md`](docs/STAGE_02_SUPABASE.md).
 
 ## Variables d’environnement
 
-Copier `.env.example` vers `.env.local`. Ne jamais exposer une clé privée dans
-une variable `NEXT_PUBLIC_*`. Les variables Supabase seront ajoutées à l’étape
-2 avec une validation typée.
+Copier `.env.example` vers `.env.local`. Les deux variables Supabase doivent
+être définies ensemble ou laissées vides. Une configuration partielle, une URL
+non HTTP(S), une clé `sb_secret_*` ou `service_role` fait échouer explicitement
+l’application. Ne jamais exposer une clé privée dans `NEXT_PUBLIC_*`.
 
 ## Qualité et CI
 
