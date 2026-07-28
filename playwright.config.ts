@@ -1,14 +1,15 @@
 import { defineConfig, devices } from "@playwright/test"
 
-const port = 3100
-const baseURL = `http://127.0.0.1:${port}`
+const port = Number(process.env.NDOA_PLAYWRIGHT_PORT ?? 3100)
+const baseURL = `http://localhost:${port}`
 
 export default defineConfig({
   testDir: "./tests/e2e",
-  fullyParallel: true,
+  fullyParallel: false,
+  timeout: 60_000,
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
+  workers: 1,
   reporter: [["list"], ["html", { open: "never" }]],
   use: {
     baseURL,
@@ -25,5 +26,9 @@ export default defineConfig({
     url: baseURL,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
+    env: {
+      ...process.env,
+      NEXT_PUBLIC_APP_URL: baseURL,
+    },
   },
 })
