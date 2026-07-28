@@ -6,8 +6,9 @@ Supabase SSR avec schéma multi-tenant versionné :
 landing page, tableau de bord de démonstration, assistant de création de
 mariage, gestion locale des invités et invitation publique.
 
-L’authentification et les frontières RLS sont présentes. Les écrans métier
-restent locaux jusqu’à leur connexion aux routes API lors des étapes suivantes.
+L’authentification, les frontières RLS et les premiers endpoints REST métier
+sont présents. Les écrans spécialisés restent progressivement connectés dans
+les étapes suivantes.
 
 ## Prérequis
 
@@ -62,6 +63,11 @@ npm run supabase:types   # génère un fichier de types à examiner
 | `/admin` | Espace réservé au claim `admin` |
 | `/guest` | Espace réservé au claim `guest` |
 
+Les collections REST sont documentées dans
+[`docs/STAGE_05_API.md`](docs/STAGE_05_API.md) : mariages, événements,
+programme, invités, groupes et tables avec pagination, recherche et enveloppe
+d’erreur homogène.
+
 ## Architecture
 
 ```text
@@ -94,6 +100,8 @@ Les flux d’identité et les rôles sont décrits dans
 [`docs/STAGE_03_AUTHENTICATION.md`](docs/STAGE_03_AUTHENTICATION.md).
 Le schéma, les contraintes et les policies sont décrits dans
 [`docs/STAGE_04_DATABASE.md`](docs/STAGE_04_DATABASE.md).
+Les contrats REST sont décrits dans
+[`docs/STAGE_05_API.md`](docs/STAGE_05_API.md).
 
 ## Variables d’environnement
 

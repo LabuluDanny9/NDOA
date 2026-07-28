@@ -130,6 +130,16 @@ validation serveur, limitation de débit et opérations idempotentes.
 
 ## Conventions
 
+## Couche API (étape 5)
+
+Les mutations métier passent par les routes `app/api` et non par les clients
+Supabase dans les composants UI. `requireApiContext` impose une configuration
+Supabase complète et une session vérifiée avant toute requête. Les payloads
+camelCase sont validés par Zod puis sérialisés vers le contrat SQL
+snake_case ; les listes utilisent des paramètres de pagination et de tri sur
+liste blanche. L’enveloppe `{ data, requestId }` et les codes d’erreur stables
+facilitent l’observabilité sans divulguer les détails Postgres.
+
 - Server Components par défaut ; `"use client"` uniquement pour
   l’interactivité.
 - Zod aux frontières de confiance.

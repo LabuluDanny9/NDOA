@@ -13,6 +13,15 @@ test("the public home page renders the NDOA heading", async ({ page }) => {
   ).toHaveAttribute("href", "/register")
 })
 
+test("the API fails closed when Supabase is not configured", async ({ request }) => {
+  const response = await request.get("/api/weddings")
+  expect(response.status()).toBe(503)
+  await expect(response.json()).resolves.toMatchObject({
+    error: { code: "SUPABASE_NOT_CONFIGURED" },
+  })
+  expect(response.headers()["x-request-id"]).toBeTruthy()
+})
+
 test("the guest dashboard renders its management table", async ({ page }) => {
   await page.goto("/dashboard/guests")
 
