@@ -49,4 +49,15 @@ export const guestCreateSchema = z.object({
 export const guestUpdateSchema = guestCreateSchema.partial().extend({ rsvpStatus: z.enum(["pending", "accepted", "declined", "maybe"]).optional(), invitationStatus: z.enum(["draft", "queued", "sent", "delivered", "opened", "failed"]).optional() })
 export const guestGroupSchema = z.object({ name: shortText(80), description: z.string().trim().max(1000).optional().nullable(), color: z.string().regex(/^#[0-9a-fA-F]{6}$/).optional().nullable(), position: z.number().int().min(0).max(10_000).default(0) })
 export const guestTableSchema = z.object({ name: shortText(80), capacity: z.number().int().positive().max(100), shape: z.string().trim().max(40).optional().nullable(), location: z.string().trim().max(160).optional().nullable(), position: z.number().int().min(0).max(10_000).default(0) })
+export const messageCreateSchema = z.object({
+  guestId: uuid.optional().nullable(),
+  channel: z.enum(["email", "sms", "whatsapp", "in_app"]),
+  recipient: shortText(254),
+  subject: z.string().trim().max(160).optional().nullable(),
+  body: z.string().trim().max(10000).optional(),
+  template: z.enum(["invitation", "reminder", "rsvp_confirmation"]).optional(),
+  scheduledAt: z.string().datetime({ offset: true }).optional().nullable(),
+}).superRefine((value, context) => {
+  if (!value.body && !value.template) context.addIssue({ code: z.ZodIssueCode.custom, path: ["body"], message: "Un message ou un template est requis." })
+})
 export const uuidSchema = uuid
