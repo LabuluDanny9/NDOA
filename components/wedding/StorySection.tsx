@@ -1,19 +1,29 @@
 ﻿"use client"
 
 import { motion } from "framer-motion"
-import { FieldErrors, UseFormRegister, UseFormWatch } from "react-hook-form"
+import {
+  type Control,
+  type FieldErrors,
+  type UseFormRegister,
+  useWatch,
+} from "react-hook-form"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
+import type { WeddingFormValues } from "@/components/wedding/wedding-form-schema"
 
 interface StorySectionProps {
-  register: UseFormRegister<any>
-  errors: FieldErrors<any>
-  watch: UseFormWatch<any>
+  control: Control<WeddingFormValues>
+  register: UseFormRegister<WeddingFormValues>
+  errors: FieldErrors<WeddingFormValues>
 }
 
-export default function StorySection({ register, errors, watch }: StorySectionProps) {
-  const story = watch("story") as string
-  const count = story?.length ?? 0
+export default function StorySection({
+  control,
+  register,
+  errors,
+}: StorySectionProps) {
+  const story = useWatch({ control, name: "story" })
+  const count = story.length
 
   return (
     <motion.div
@@ -37,6 +47,8 @@ export default function StorySection({ register, errors, watch }: StorySectionPr
             <span className="font-medium text-slate-900">Histoire</span>
             <Textarea
               rows={10}
+              maxLength={5000}
+              aria-invalid={Boolean(errors.story)}
               {...register("story")}
               placeholder="Décrivez les moments forts qui ont mené à ce jour spécial."
             />
@@ -44,7 +56,11 @@ export default function StorySection({ register, errors, watch }: StorySectionPr
               <span>Maximum 5000 caractères.</span>
               <span>{count} / 5000</span>
             </div>
-            {errors.story?.message ? <p className="text-sm text-rose-600">{errors.story.message as string}</p> : null}
+            {errors.story?.message ? (
+              <span role="alert" className="text-sm text-rose-600">
+                {errors.story.message}
+              </span>
+            ) : null}
           </label>
         </CardContent>
       </Card>

@@ -1,13 +1,15 @@
 ﻿"use client"
 
 import { motion } from "framer-motion"
-import { FieldErrors, UseFormRegister } from "react-hook-form"
+import type { FieldErrors, UseFormRegister } from "react-hook-form"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
+import FormField from "@/components/wedding/FormField"
+import type { WeddingFormValues } from "@/components/wedding/wedding-form-schema"
 
 interface EventSectionProps {
-  register: UseFormRegister<any>
-  errors: FieldErrors<any>
+  register: UseFormRegister<WeddingFormValues>
+  errors: FieldErrors<WeddingFormValues>
 }
 
 export default function EventSection({ register, errors }: EventSectionProps) {
@@ -29,53 +31,37 @@ export default function EventSection({ register, errors }: EventSectionProps) {
         </CardHeader>
 
         <CardContent className="grid gap-6 px-8 py-8">
-          <Field label="Nom de la salle" error={errors.venueName?.message as string | undefined}>
+          <FormField label="Nom de la salle" error={errors.venueName?.message}>
             <Input type="text" placeholder="Salle Magnifique" {...register("venueName")} />
-          </Field>
+          </FormField>
 
-          <Field label="Adresse" error={errors.address?.message as string | undefined}>
+          <FormField label="Adresse" error={errors.address?.message}>
             <Input type="text" placeholder="123 Rue du Bonheur" {...register("address")} />
-          </Field>
+          </FormField>
 
           <div className="grid gap-6 sm:grid-cols-2">
-            <Field label="Ville" error={errors.city?.message as string | undefined}>
+            <FormField label="Ville" error={errors.city?.message}>
               <Input type="text" placeholder="Lubumbashi" {...register("city")} />
-            </Field>
-            <Field label="Province" error={errors.province?.message as string | undefined}>
+            </FormField>
+            <FormField label="Province" error={errors.province?.message}>
               <Input type="text" placeholder="Haut-Katanga" {...register("province")} />
-            </Field>
+            </FormField>
           </div>
 
           <div className="grid gap-6 sm:grid-cols-2">
-            <Field label="Pays" error={errors.country?.message as string | undefined}>
+            <FormField label="Pays" error={errors.country?.message}>
               <Input type="text" placeholder="République démocratique du Congo" {...register("country")} />
-            </Field>
-            <Field label="Coordonnées GPS" error={errors.gpsCoordinates?.message as string | undefined}>
+            </FormField>
+            <FormField label="Coordonnées GPS" error={errors.gpsCoordinates?.message}>
               <Input type="text" placeholder="-11.669, 27.479" {...register("gpsCoordinates")} />
-            </Field>
+            </FormField>
           </div>
 
-          <Field label="Lien Google Maps" error={errors.mapsLink?.message as string | undefined}>
+          <FormField label="Lien Google Maps" error={errors.mapsLink?.message}>
             <Input type="url" placeholder="https://goo.gl/maps/..." {...register("mapsLink")} />
-          </Field>
+          </FormField>
         </CardContent>
       </Card>
     </motion.div>
-  )
-}
-
-interface FieldProps {
-  label: string
-  children: React.ReactNode
-  error?: string
-}
-
-function Field({ label, children, error }: FieldProps) {
-  return (
-    <label className="block space-y-2 text-sm text-slate-700">
-      <span className="font-medium text-slate-900">{label}</span>
-      {children}
-      {error ? <p className="text-sm text-rose-600">{error}</p> : null}
-    </label>
   )
 }

@@ -1,10 +1,9 @@
 ﻿"use client"
 
 import { AnimatePresence, motion } from "framer-motion"
-import { useMemo, useState } from "react"
-import { useFieldArray, useForm } from "react-hook-form"
+import { useState } from "react"
+import { type SubmitHandler, useForm, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { z } from "zod"
 import { ArrowLeft, ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -15,46 +14,12 @@ import StorySection from "@/components/wedding/StorySection"
 import ProgramSection from "@/components/wedding/ProgramSection"
 import RSVPSettings from "@/components/wedding/RSVPSettings"
 import ThemeSelector from "@/components/wedding/ThemeSelector"
-
-const programItemSchema = z.object({
-  eventName: z.string().min(2, "Nom requis"),
-  date: z.string().min(1, "Date requise"),
-  time: z.string().min(1, "Heure requise"),
-  location: z.string().min(2, "Lieu requis"),
-  description: z.string().min(5, "Description requise"),
-})
-
-const weddingFormSchema = z.object({
-  weddingName: z.string().min(3, "Nom du mariage requis"),
-  groomName: z.string().min(2, "Nom du marié requis"),
-  brideName: z.string().min(2, "Nom de la mariée requis"),
-  date: z.string().min(1, "Date requise"),
-  time: z.string().min(1, "Heure requise"),
-  slogan: z.string().max(120, "Maximum 120 caractères").optional(),
-  venueName: z.string().min(2, "Nom de la salle requis"),
-  address: z.string().min(5, "Adresse requise"),
-  city: z.string().min(2, "Ville requise"),
-  province: z.string().min(2, "Province requise"),
-  country: z.string().min(2, "Pays requis"),
-  gpsCoordinates: z.string().optional().or(z.literal("")),
-  mapsLink: z.string().url("Lien Google Maps invalide").optional().or(z.literal("")),
-  coverPhoto: z.any().refine((file) => file instanceof File, "Photo de couverture requise"),
-  galleryPhotos: z.array(z.instanceof(File)).optional(),
-  story: z.string().min(20, "Racontez votre histoire en quelques mots"),
-  programs: z.array(programItemSchema).min(1, "Ajoutez au moins une cérémonie"),
-  rsvpDeadline: z.string().min(1, "Date limite requise"),
-  maxGuests: z.coerce.number().min(1, "Nombre maximal d'accompagnants requis"),
-  allowChildren: z.boolean().optional(),
-  allowComments: z.boolean().optional(),
-  confirmationMessage: z.string().min(10, "Message de confirmation requis"),
-  primaryColor: z.string().min(4, "Couleur principale requise"),
-  secondaryColor: z.string().min(4, "Couleur secondaire requise"),
-  textColor: z.string().min(4, "Couleur du texte requise"),
-  font: z.string().min(2, "Police requise"),
-  style: z.string().min(2, "Style requis"),
-})
-
-type WeddingFormValues = z.infer<typeof weddingFormSchema>
+import {
+  defaultWeddingValues,
+  stepValidationMap,
+  weddingFormSchema,
+  type WeddingFormValues,
+} from "@/components/wedding/wedding-form-schema"
 
 const stepLabels = [
   "Informations générales",
@@ -66,111 +31,83 @@ const stepLabels = [
   "Personnalisation",
 ] as const
 
-const defaultValues: WeddingFormValues = {
-  weddingName: "",
-  groomName: "",
-  brideName: "",
-  date: "",
-  time: "",
-  slogan: "",
-  venueName: "",
-  address: "",
-  city: "",
-  province: "",
-  country: "",
-  gpsCoordinates: "",
-  mapsLink: "",
-  coverPhoto: null as unknown as File,
-  galleryPhotos: [],
-  story: "",
-  programs: [
-    {
-      eventName: "Cérémonie",
-      date: "",
-      time: "",
-      location: "",
-      description: "",
-    },
-  ],
-  rsvpDeadline: "",
-  maxGuests: 1,
-  allowChildren: false,
-  allowComments: false,
-  confirmationMessage: "",
-  primaryColor: "#f59e0b",
-  secondaryColor: "#0f172a",
-  textColor: "#0f172a",
-  font: "Inter",
-  style: "Classic",
-}
-
 export default function WeddingForm() {
   const [currentStep, setCurrentStep] = useState(0)
-  const [savedValues, setSavedValues] = useState<WeddingFormValues>(defaultValues)
   const [submitted, setSubmitted] = useState(false)
 
   const form = useForm<WeddingFormValues>({
     resolver: zodResolver(weddingFormSchema),
-    defaultValues,
+    defaultValues: defaultWeddingValues,
     mode: "onTouched",
   })
 
   const {
     register,
     handleSubmit,
-    watch,
     setValue,
     control,
     trigger,
-    reset,
     formState: { errors, isSubmitting },
   } = form
 
-  const { fields, append, remove } = useFieldArray({
+  const [weddingName, groomName, brideName] = useWatch({
     control,
-    name: "programs",
+    name: ["weddingName", "groomName", "brideName"],
   })
 
-  const currentSection = useMemo(() => {
+  const renderCurrentSection = () => {
     switch (currentStep) {
       case 0:
         return <CoupleSection register={register} errors={errors} />
       case 1:
         return <EventSection register={register} errors={errors} />
       case 2:
-        return <GalleryUploader register={register} errors={errors} watch={watch} setValue={setValue} />
+        return (
+          <GalleryUploader
+            control={control}
+            errors={errors}
+            setValue={setValue}
+          />
+        )
       case 3:
-        return <StorySection register={register} errors={errors} watch={watch} />
+        return (
+          <StorySection
+            control={control}
+            register={register}
+            errors={errors}
+          />
+        )
       case 4:
         return <ProgramSection control={control} register={register} errors={errors} />
       case 5:
-        return <RSVPSettings register={register} errors={errors} watch={watch} />
+        return (
+          <RSVPSettings
+            control={control}
+            register={register}
+            errors={errors}
+          />
+        )
       case 6:
-        return <ThemeSelector register={register} errors={errors} watch={watch} />
+        return (
+          <ThemeSelector
+            control={control}
+            register={register}
+            errors={errors}
+          />
+        )
       default:
         return null
     }
-  }, [currentStep, control, errors, register, setValue, watch])
+  }
 
   const progress = Math.round(((currentStep + 1) / stepLabels.length) * 100)
-
-  const stepValidationMap: Record<number, Array<keyof WeddingFormValues>> = {
-    0: ["weddingName", "groomName", "brideName", "date", "time"],
-    1: ["venueName", "address", "city", "province", "country", "mapsLink"],
-    2: ["coverPhoto"],
-    3: ["story"],
-    4: [],
-    5: ["rsvpDeadline", "maxGuests", "confirmationMessage"],
-    6: ["primaryColor", "secondaryColor", "textColor", "font", "style"],
-  }
 
   const isLastStep = currentStep === stepLabels.length - 1
 
   const goNext = async () => {
     const fieldNames = stepValidationMap[currentStep] ?? []
-    const valid = fieldNames.length > 0 ? await trigger(fieldNames as any) : await trigger()
+    const valid = await trigger(fieldNames, { shouldFocus: true })
     if (!valid) return
-    setSavedValues(form.getValues())
     setCurrentStep((value) => Math.min(stepLabels.length - 1, value + 1))
   }
 
@@ -178,14 +115,12 @@ export default function WeddingForm() {
     setCurrentStep((value) => Math.max(0, value - 1))
   }
 
-  const onSubmit = (values: WeddingFormValues) => {
-    setSavedValues(values)
+  const onSubmit: SubmitHandler<WeddingFormValues> = () => {
     setSubmitted(true)
-    reset(values)
   }
 
-  const preview = watch("weddingName") || "Votre mariage"
-  const couple = `${watch("groomName") || "Marié"} & ${watch("brideName") || "Mariée"}`
+  const preview = weddingName || "Votre mariage"
+  const couple = `${groomName || "Marié"} & ${brideName || "Mariée"}`
 
   return (
     <Card className="overflow-hidden rounded-[2rem] bg-white shadow-[0_30px_80px_rgba(15,23,42,0.08)]">
@@ -219,7 +154,7 @@ export default function WeddingForm() {
               transition={{ duration: 0.35 }}
             >
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                {currentSection}
+                {renderCurrentSection()}
 
                 <div className="flex flex-col gap-4 pt-4 sm:flex-row sm:items-center sm:justify-between">
                   <Button
@@ -239,10 +174,10 @@ export default function WeddingForm() {
                       {isLastStep ? "Vérifiez puis finalisez le mariage." : "Remplissez la section pour passer à la suivante."}
                     </p>
                     <Button
-                      type="button"
+                      type={isLastStep ? "submit" : "button"}
                       size="lg"
                       className="w-full sm:w-auto"
-                      onClick={isLastStep ? handleSubmit(onSubmit) : goNext}
+                      onClick={isLastStep ? undefined : goNext}
                       disabled={isSubmitting}
                     >
                       {isLastStep ? (

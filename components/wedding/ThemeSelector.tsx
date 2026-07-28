@@ -1,24 +1,34 @@
 ﻿"use client"
 
 import { motion } from "framer-motion"
-import { FieldErrors, UseFormRegister, UseFormWatch } from "react-hook-form"
+import {
+  type Control,
+  type FieldErrors,
+  type UseFormRegister,
+  useWatch,
+} from "react-hook-form"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
+import FormField from "@/components/wedding/FormField"
+import type { WeddingFormValues } from "@/components/wedding/wedding-form-schema"
 
 interface ThemeSelectorProps {
-  register: UseFormRegister<any>
-  errors: FieldErrors<any>
-  watch: UseFormWatch<any>
+  control: Control<WeddingFormValues>
+  register: UseFormRegister<WeddingFormValues>
+  errors: FieldErrors<WeddingFormValues>
 }
 
 const styles = ["Classic", "Luxury", "Floral", "Minimaliste", "Royal"] as const
 
-export default function ThemeSelector({ register, errors, watch }: ThemeSelectorProps) {
-  const primaryColor = (watch("primaryColor") as unknown as string) || "#fbbf24"
-  const secondaryColor = (watch("secondaryColor") as unknown as string) || "#0f172a"
-  const textColor = (watch("textColor") as unknown as string) || "#0f172a"
-  const style = (watch("style") as unknown as string) || "Classic"
-  const font = (watch("font") as unknown as string) || "Inter"
+export default function ThemeSelector({
+  control,
+  register,
+  errors,
+}: ThemeSelectorProps) {
+  const [primaryColor, secondaryColor, textColor, style, font] = useWatch({
+    control,
+    name: ["primaryColor", "secondaryColor", "textColor", "style", "font"],
+  })
 
   return (
     <motion.div
@@ -39,19 +49,19 @@ export default function ThemeSelector({ register, errors, watch }: ThemeSelector
 
         <CardContent className="grid gap-6 px-8 py-8">
           <div className="grid gap-6 sm:grid-cols-2">
-            <Field label="Couleur principale" error={errors.primaryColor?.message as string | undefined}>
+            <FormField label="Couleur principale" error={errors.primaryColor?.message}>
               <Input type="color" {...register("primaryColor")} />
-            </Field>
-            <Field label="Couleur secondaire" error={errors.secondaryColor?.message as string | undefined}>
+            </FormField>
+            <FormField label="Couleur secondaire" error={errors.secondaryColor?.message}>
               <Input type="color" {...register("secondaryColor")} />
-            </Field>
+            </FormField>
           </div>
 
           <div className="grid gap-6 sm:grid-cols-2">
-            <Field label="Couleur du texte" error={errors.textColor?.message as string | undefined}>
+            <FormField label="Couleur du texte" error={errors.textColor?.message}>
               <Input type="color" {...register("textColor")} />
-            </Field>
-            <Field label="Police" error={errors.font?.message as string | undefined}>
+            </FormField>
+            <FormField label="Police" error={errors.font?.message}>
               <select
                 {...register("font")}
                 className="w-full rounded-lg border border-input bg-transparent px-3 py-2 text-sm text-foreground outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50"
@@ -62,10 +72,10 @@ export default function ThemeSelector({ register, errors, watch }: ThemeSelector
                 <option>Montserrat</option>
                 <option>Crimson Pro</option>
               </select>
-            </Field>
+            </FormField>
           </div>
 
-          <Field label="Style" error={errors.style?.message as string | undefined}>
+          <FormField label="Style" error={errors.style?.message}>
             <div className="grid gap-3 sm:grid-cols-3">
               {styles.map((item) => (
                 <label
@@ -82,7 +92,7 @@ export default function ThemeSelector({ register, errors, watch }: ThemeSelector
                 </label>
               ))}
             </div>
-          </Field>
+          </FormField>
 
           <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
             <div
@@ -101,21 +111,5 @@ export default function ThemeSelector({ register, errors, watch }: ThemeSelector
         </CardContent>
       </Card>
     </motion.div>
-  )
-}
-
-interface FieldProps {
-  label: string
-  children: React.ReactNode
-  error?: string
-}
-
-function Field({ label, children, error }: FieldProps) {
-  return (
-    <label className="block space-y-2 text-sm text-slate-700">
-      <span className="font-medium text-slate-900">{label}</span>
-      {children}
-      {error ? <p className="text-sm text-rose-600">{error}</p> : null}
-    </label>
   )
 }

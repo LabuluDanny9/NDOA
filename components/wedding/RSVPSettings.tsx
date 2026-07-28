@@ -1,19 +1,32 @@
 ﻿"use client"
 
 import { motion } from "framer-motion"
-import { FieldErrors, UseFormRegister, UseFormWatch } from "react-hook-form"
+import {
+  type Control,
+  type FieldErrors,
+  type UseFormRegister,
+  useWatch,
+} from "react-hook-form"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
+import FormField from "@/components/wedding/FormField"
+import type { WeddingFormValues } from "@/components/wedding/wedding-form-schema"
 
 interface RSVPSettingsProps {
-  register: UseFormRegister<any>
-  errors: FieldErrors<any>
-  watch: UseFormWatch<any>
+  control: Control<WeddingFormValues>
+  register: UseFormRegister<WeddingFormValues>
+  errors: FieldErrors<WeddingFormValues>
 }
 
-export default function RSVPSettings({ register, errors, watch }: RSVPSettingsProps) {
-  const allowChildren = watch("allowChildren") as boolean
-  const allowComments = watch("allowComments") as boolean
+export default function RSVPSettings({
+  control,
+  register,
+  errors,
+}: RSVPSettingsProps) {
+  const [allowChildren, allowComments] = useWatch({
+    control,
+    name: ["allowChildren", "allowComments"],
+  })
 
   return (
     <motion.div
@@ -34,12 +47,12 @@ export default function RSVPSettings({ register, errors, watch }: RSVPSettingsPr
 
         <CardContent className="grid gap-6 px-8 py-8">
           <div className="grid gap-6 sm:grid-cols-2">
-            <Field label="Date limite RSVP" error={errors.rsvpDeadline?.message as string | undefined}>
+            <FormField label="Date limite RSVP" error={errors.rsvpDeadline?.message}>
               <Input type="date" {...register("rsvpDeadline")} />
-            </Field>
-            <Field label="Nombre maximum d'accompagnants" error={errors.maxGuests?.message as string | undefined}>
-              <Input type="number" min={1} {...register("maxGuests", { valueAsNumber: true })} />
-            </Field>
+            </FormField>
+            <FormField label="Nombre maximum d’accompagnants" error={errors.maxGuests?.message}>
+              <Input type="number" min={1} max={20} {...register("maxGuests", { valueAsNumber: true })} />
+            </FormField>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
@@ -53,14 +66,14 @@ export default function RSVPSettings({ register, errors, watch }: RSVPSettingsPr
             </label>
           </div>
 
-          <Field label="Message de confirmation" error={errors.confirmationMessage?.message as string | undefined}>
+          <FormField label="Message de confirmation" error={errors.confirmationMessage?.message}>
             <textarea
               {...register("confirmationMessage")}
               rows={5}
               className="w-full rounded-lg border border-input bg-transparent px-3 py-3 text-sm text-foreground outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50"
               placeholder="Merci d’avoir répondu. Nous sommes impatients de partager ce moment avec vous."
             />
-          </Field>
+          </FormField>
 
           <div className="rounded-[1.75rem] border border-slate-200 bg-slate-50 p-5">
             <p className="text-sm font-semibold text-slate-900">Statut actuel</p>
@@ -69,21 +82,5 @@ export default function RSVPSettings({ register, errors, watch }: RSVPSettingsPr
         </CardContent>
       </Card>
     </motion.div>
-  )
-}
-
-interface FieldProps {
-  label: string
-  children: React.ReactNode
-  error?: string
-}
-
-function Field({ label, children, error }: FieldProps) {
-  return (
-    <label className="block space-y-2 text-sm text-slate-700">
-      <span className="font-medium text-slate-900">{label}</span>
-      {children}
-      {error ? <p className="text-sm text-rose-600">{error}</p> : null}
-    </label>
   )
 }

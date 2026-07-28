@@ -1,15 +1,22 @@
 ﻿"use client"
 
 import { motion } from "framer-motion"
-import { Control, FieldErrors, UseFormRegister, useFieldArray } from "react-hook-form"
+import {
+  type Control,
+  type FieldErrors,
+  type UseFormRegister,
+  useFieldArray,
+} from "react-hook-form"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import FormField from "@/components/wedding/FormField"
+import type { WeddingFormValues } from "@/components/wedding/wedding-form-schema"
 
 interface ProgramSectionProps {
-  control: any
-  register: UseFormRegister<any>
-  errors: FieldErrors<any>
+  control: Control<WeddingFormValues>
+  register: UseFormRegister<WeddingFormValues>
+  errors: FieldErrors<WeddingFormValues>
 }
 
 export default function ProgramSection({ control, register, errors }: ProgramSectionProps) {
@@ -37,7 +44,7 @@ export default function ProgramSection({ control, register, errors }: ProgramSec
 
         <CardContent className="space-y-6 px-8 py-8">
           {fields.map((field, index) => {
-            const itemErrors = ((errors as any).programs?.[index] ?? {}) as Record<string, any>
+            const itemErrors = errors.programs?.[index]
             return (
               <div key={field.id} className="space-y-4 rounded-[1.75rem] border border-slate-200 bg-slate-50 p-6">
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -56,40 +63,45 @@ export default function ProgramSection({ control, register, errors }: ProgramSec
                 </div>
 
                 <div className="grid gap-6 sm:grid-cols-2">
-                  <Field label="Nom" error={itemErrors.eventName?.message as string | undefined}>
+                  <FormField label="Nom" error={itemErrors?.eventName?.message}>
                     <Input
                       type="text"
                       placeholder="Cérémonie civile"
                       {...register(`programs.${index}.eventName` as const)}
                     />
-                  </Field>
-                  <Field label="Date" error={itemErrors.date?.message as string | undefined}>
+                  </FormField>
+                  <FormField label="Date" error={itemErrors?.date?.message}>
                     <Input type="date" {...register(`programs.${index}.date` as const)} />
-                  </Field>
+                  </FormField>
                 </div>
 
                 <div className="grid gap-6 sm:grid-cols-2">
-                  <Field label="Heure" error={itemErrors.time?.message as string | undefined}>
+                  <FormField label="Heure" error={itemErrors?.time?.message}>
                     <Input type="time" {...register(`programs.${index}.time` as const)} />
-                  </Field>
-                  <Field label="Lieu" error={itemErrors.location?.message as string | undefined}>
+                  </FormField>
+                  <FormField label="Lieu" error={itemErrors?.location?.message}>
                     <Input type="text" placeholder="Jardin principal" {...register(`programs.${index}.location` as const)} />
-                  </Field>
+                  </FormField>
                 </div>
 
-                <Field label="Description" error={itemErrors.description?.message as string | undefined}>
+                <FormField label="Description" error={itemErrors?.description?.message}>
                   <textarea
                     {...register(`programs.${index}.description` as const)}
                     rows={4}
                     className="w-full rounded-lg border border-input bg-transparent px-3 py-3 text-sm text-foreground outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50"
                     placeholder="Décrivez cette étape du programme."
                   />
-                </Field>
+                </FormField>
               </div>
             )
           })}
 
           <div className="pt-2">
+            {typeof errors.programs?.message === "string" ? (
+              <p role="alert" className="mb-3 text-sm text-rose-600">
+                {errors.programs.message}
+              </p>
+            ) : null}
             <Button
               type="button"
               variant="secondary"
@@ -103,21 +115,5 @@ export default function ProgramSection({ control, register, errors }: ProgramSec
         </CardContent>
       </Card>
     </motion.div>
-  )
-}
-
-interface FieldProps {
-  label: string
-  children: React.ReactNode
-  error?: string
-}
-
-function Field({ label, children, error }: FieldProps) {
-  return (
-    <label className="block space-y-2 text-sm text-slate-700">
-      <span className="font-medium text-slate-900">{label}</span>
-      {children}
-      {error ? <p className="text-sm text-rose-600">{error}</p> : null}
-    </label>
   )
 }

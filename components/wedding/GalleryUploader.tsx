@@ -1,28 +1,40 @@
 ﻿"use client"
 
+import Image from "next/image"
 import { useEffect, useMemo, useState } from "react"
 import { motion } from "framer-motion"
-import { FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from "react-hook-form"
+import {
+  type Control,
+  type FieldErrors,
+  type UseFormSetValue,
+  useWatch,
+} from "react-hook-form"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
 import { ImagePlus } from "lucide-react"
+import {
+  MAX_GALLERY_PHOTOS,
+  type WeddingFormValues,
+} from "@/components/wedding/wedding-form-schema"
 
 interface GalleryUploaderProps {
-  register: UseFormRegister<any>
-  errors: FieldErrors<any>
-  watch: UseFormWatch<any>
-  setValue: UseFormSetValue<any>
+  control: Control<WeddingFormValues>
+  errors: FieldErrors<WeddingFormValues>
+  setValue: UseFormSetValue<WeddingFormValues>
 }
 
-export default function GalleryUploader({ register, errors, watch, setValue }: GalleryUploaderProps) {
-  const coverPhoto = watch("coverPhoto") as File | null
-  const galleryPhotos = watch("galleryPhotos") as File[] | undefined
+export default function GalleryUploader({
+  control,
+  errors,
+  setValue,
+}: GalleryUploaderProps) {
+  const coverPhoto = useWatch({ control, name: "coverPhoto" })
+  const galleryPhotos = useWatch({ control, name: "galleryPhotos" })
   const [dragActive, setDragActive] = useState(false)
 
   const previews = useMemo(
     () =>
-      (galleryPhotos ?? []).map((file) => ({
+      galleryPhotos.map((file) => ({
         file,
         url: URL.createObjectURL(file),
       })),
@@ -40,24 +52,32 @@ export default function GalleryUploader({ register, errors, watch, setValue }: G
     setValue("coverPhoto", file, { shouldValidate: true, shouldDirty: true })
   }
 
+  const appendGalleryImages = (files: File[]) => {
+    const images = files.filter((file) => file.type.startsWith("image/"))
+    setValue(
+      "galleryPhotos",
+      [...galleryPhotos, ...images].slice(0, MAX_GALLERY_PHOTOS),
+      { shouldValidate: true, shouldDirty: true }
+    )
+  }
+
   const handleGalleryPick = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(event.target.files ?? [])
-    setValue("galleryPhotos", [...(galleryPhotos ?? []), ...files], { shouldValidate: false, shouldDirty: true })
+    appendGalleryImages(Array.from(event.target.files ?? []))
+    event.target.value = ""
   }
 
   const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault()
     setDragActive(false)
-    const files = Array.from(event.dataTransfer.files ?? [])
-    const images = files.filter((file) => file.type.startsWith("image/"))
-    if (images.length) {
-      setValue("galleryPhotos", [...(galleryPhotos ?? []), ...images], { shouldValidate: false, shouldDirty: true })
-    }
+    appendGalleryImages(Array.from(event.dataTransfer.files ?? []))
   }
 
   const removeGalleryImage = (index: number) => {
-    const nextImages = (galleryPhotos ?? []).filter((_, itemIndex) => itemIndex !== index)
-    setValue("galleryPhotos", nextImages, { shouldValidate: false, shouldDirty: true })
+    const nextImages = galleryPhotos.filter((_, itemIndex) => itemIndex !== index)
+    setValue("galleryPhotos", nextImages, {
+      shouldValidate: true,
+      shouldDirty: true,
+    })
   }
 
   return (
@@ -80,9 +100,16 @@ export default function GalleryUploader({ register, errors, watch, setValue }: G
         <CardContent className="grid gap-6 px-8 py-8">
           <div className="grid gap-4">
             <label className="block text-sm font-medium text-slate-900">Photo de couverture</label>
-            <Input type="file" accept="image/*" onChange={handleCoverPick} />
+            <Input
+              type="file"
+              accept="image/*"
+              onChange={handleCoverPick}
+              aria-invalid={Boolean(errors.coverPhoto)}
+            />
             {errors.coverPhoto?.message ? (
-              <p className="text-sm text-rose-600">{errors.coverPhoto.message as string}</p>
+              <p role="alert" className="text-sm text-rose-600">
+                {errors.coverPhoto.message}
+              </p>
             ) : null}
             {coverPhoto ? (
               <div className="mt-3 rounded-3xl border border-slate-200 bg-slate-50 p-4">
@@ -108,6 +135,9 @@ export default function GalleryUploader({ register, errors, watch, setValue }: G
               }`}
             >
               <p className="text-sm text-slate-600">Glissez-déposez vos images ici ou utilisez le bouton ci-dessous.</p>
+              <p className="mt-2 text-xs text-slate-500">
+                Maximum {MAX_GALLERY_PHOTOS} images, 8 Mo par fichier.
+              </p>
               <label className="mt-4 inline-flex cursor-pointer rounded-full bg-amber-500 px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-amber-600">
                 Ajouter des photos
                 <input
@@ -119,14 +149,29 @@ export default function GalleryUploader({ register, errors, watch, setValue }: G
                 />
               </label>
             </div>
-            {galleryPhotos && galleryPhotos.length > 0 ? (
+            {errors.galleryPhotos?.message ? (
+              <p role="alert" className="mt-3 text-sm text-rose-600">
+                {errors.galleryPhotos.message}
+              </p>
+            ) : null}
+            {galleryPhotos.length > 0 ? (
               <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {previews.map((preview, index) => (
                   <div key={preview.url} className="group relative overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
-                    <img src={preview.url} alt={preview.file.name} className="h-40 w-full object-cover" />
+                    <div className="relative h-40 w-full">
+                      <Image
+                        src={preview.url}
+                        alt={preview.file.name}
+                        fill
+                        unoptimized
+                        sizes="(max-width: 640px) 100vw, 33vw"
+                        className="object-cover"
+                      />
+                    </div>
                     <button
                       type="button"
                       onClick={() => removeGalleryImage(index)}
+                      aria-label={`Supprimer ${preview.file.name}`}
                       className="absolute right-3 top-3 inline-flex rounded-full bg-white/80 p-2 text-slate-700 transition hover:bg-white"
                     >
                       Supprimer
