@@ -25,15 +25,25 @@ interface TopbarProps {
   className?: string
   title?: string
   userName?: string
+  userRole?: string
   userAvatar?: string
 }
 
 export default function Topbar({
   className,
   title = "Dashboard",
-  userName = "Danny Labulu",
+  userName = "Mode démonstration",
+  userRole = "Données locales",
   userAvatar,
 }: TopbarProps) {
+  const firstName = userName.split(" ")[0]
+  const initials = userName
+    .split(" ")
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join("")
+    .toUpperCase()
+
   return (
     <header
       className={cn(
@@ -54,7 +64,9 @@ export default function Topbar({
           </p>
           <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             <h1 className="text-2xl font-semibold text-foreground">{title}</h1>
-            <p className="text-sm text-muted-foreground">Bienvenue, Danny 👋</p>
+            <p className="text-sm text-muted-foreground">
+              Bienvenue, {firstName} 👋
+            </p>
           </div>
         </div>
 
@@ -113,12 +125,12 @@ export default function Topbar({
                 {userAvatar ? (
                   <AvatarImage src={userAvatar} alt={userName} />
                 ) : (
-                  <AvatarFallback>DL</AvatarFallback>
+                  <AvatarFallback>{initials || "N"}</AvatarFallback>
                 )}
               </Avatar>
               <div className="hidden sm:flex flex-col gap-0.5">
                 <span className="text-sm font-medium text-foreground">{userName}</span>
-                <span className="text-xs text-muted-foreground">Administrateur</span>
+                <span className="text-xs text-muted-foreground">{userRole}</span>
               </div>
               <ChevronDown className="size-4 text-muted-foreground" />
             </DropdownMenuTrigger>

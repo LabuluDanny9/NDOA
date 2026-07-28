@@ -75,8 +75,8 @@ interface SidebarProps {
 export default function Sidebar({
   activeItem = "dashboard",
   className,
-  userName = "Julie Dupont",
-  userRole = "Organisatrice",
+  userName = "Mode démonstration",
+  userRole = "Données locales",
   userAvatar,
 }: SidebarProps) {
   const [drawerOpen, setDrawerOpen] = React.useState(false)
