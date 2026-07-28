@@ -20,6 +20,9 @@ test("the API fails closed when Supabase is not configured", async ({ request })
     error: { code: "SUPABASE_NOT_CONFIGURED" },
   })
   expect(response.headers()["x-request-id"]).toBeTruthy()
+  const invitationResponse = await request.get("/api/public/invitations/demo")
+  expect(invitationResponse.status()).toBe(503)
+  await expect(invitationResponse.json()).resolves.toMatchObject({ error: { code: "SUPABASE_NOT_CONFIGURED" } })
 })
 
 test("the wedding manager exposes draft publication and duplication in demo mode", async ({ page }) => {

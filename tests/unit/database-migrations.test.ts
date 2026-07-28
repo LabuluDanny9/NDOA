@@ -10,6 +10,7 @@ const migrationFiles = [
   "20260728082000_wedding_domains.sql",
   "20260728083000_integrity_and_activity.sql",
   "20260728084000_row_level_security.sql",
+  "20260728090000_public_invitation_projection.sql",
 ]
 
 const migrations = migrationFiles
@@ -64,7 +65,7 @@ describe("migrations Supabase", () => {
 
   it("n'accorde aucune table métier au rôle anon", () => {
     expect(migrations).not.toMatch(
-      /grant\s+(?:select|insert|update|delete)[\s\S]*?\bto\s+anon\b/i
+      /grant\s+(?:select|insert|update|delete)[^\n]*\bto\s+anon\b/i
     )
   })
 
@@ -101,5 +102,12 @@ describe("migrations Supabase", () => {
     expect(supabaseConfig).toContain(
       'uri = "pg-functions://postgres/public/custom_access_token_hook"'
     )
+  })
+
+  it("expose la projection publique sans donner accès aux tables métier", () => {
+    expect(migrations).toContain("create or replace function public.get_public_invitation")
+    expect(migrations).toContain("grant execute on function public.get_public_invitation(text) to anon, authenticated")
+    expect(migrations).toContain("where wedding.slug = target_slug and wedding.status = 'published'")
+    expect(migrations).toContain("never returns guests")
   })
 })

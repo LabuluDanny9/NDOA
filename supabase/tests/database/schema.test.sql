@@ -1,6 +1,6 @@
 begin;
 
-select plan(43);
+select plan(44);
 
 select ok(
   to_regclass(format('public.%I', table_name)) is not null,
@@ -125,6 +125,11 @@ select ok(
     )
   ),
   'every wedding-scoped table has an index containing wedding_id'
+);
+
+select ok(
+  to_regprocedure('public.get_public_invitation(text)') is not null,
+  'public invitation projection exists'
 );
 
 select * from finish();

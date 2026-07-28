@@ -106,6 +106,8 @@ Le cycle de vie des mariages est décrit dans
 [`docs/STAGE_06_WEDDING.md`](docs/STAGE_06_WEDDING.md).
 Le module invités, ses formats d’import/export et ses QR codes sont décrits
 dans [`docs/STAGE_07_GUESTS.md`](docs/STAGE_07_GUESTS.md).
+La projection publique et l’invitation par slug sont décrites dans
+[`docs/STAGE_08_INVITATION.md`](docs/STAGE_08_INVITATION.md).
 
 ## Variables d’environnement
 
