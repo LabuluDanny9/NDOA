@@ -82,6 +82,8 @@ export function apiErrorFromSupabase(error: {
   message?: string
 }) {
   if (error.code === "PGRST116") return ApiError.notFound()
+  if (error.code === "P0002") return ApiError.notFound("Invitation ou invité introuvable.")
+  if (error.code === "22023") return ApiError.badRequest("Les données RSVP sont invalides.")
   if (error.code === "23505") return ApiError.conflict()
   if (error.code === "23503" || error.code === "23514") {
     return ApiError.badRequest("La relation ou la contrainte demandée est invalide.")

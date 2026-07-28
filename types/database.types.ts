@@ -605,6 +605,17 @@ export type Database = {
         Args: { target_slug: string }
         Returns: Json
       }
+      submit_public_rsvp: {
+        Args: {
+          target_slug: string
+          guest_full_name: string
+          guest_email: string
+          target_response: RsvpResponse
+          target_companions_count?: number
+          target_comments?: string | null
+        }
+        Returns: Json
+      }
     }
     Enums: {
       app_role: AppRole

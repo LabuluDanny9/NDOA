@@ -133,7 +133,7 @@ export default async function InvitationPage({ params }: InvitationPageProps) {
             </div>
             <aside className="space-y-8">
               <LocationMap location={invitation.couple.location} address={invitation.couple.address} />
-              <RSVPForm />
+              <RSVPForm slug={slug} />
               <GiftSection gifts={invitation.gifts} />
             </aside>
           </section>
