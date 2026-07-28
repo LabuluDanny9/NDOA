@@ -112,6 +112,8 @@ Le flux RSVP public et son RPC idempotent sont décrits dans
 [`docs/STAGE_09_RSVP.md`](docs/STAGE_09_RSVP.md).
 Le dashboard KPI, ses agrégats et ses graphiques sont décrits dans
 [`docs/STAGE_10_DASHBOARD.md`](docs/STAGE_10_DASHBOARD.md).
+La galerie privée, son upload compressé et ses URLs signées sont décrits dans
+[`docs/STAGE_11_GALLERY.md`](docs/STAGE_11_GALLERY.md).
 
 ## Variables d’environnement
 

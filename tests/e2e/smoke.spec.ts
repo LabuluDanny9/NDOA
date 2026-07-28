@@ -60,6 +60,14 @@ test("the dashboard renders live KPI charts in demo mode", async ({ page }) => {
   await expect(page.getByText("Dernières actions")).toBeVisible()
 })
 
+test("the gallery renders its empty state in demo mode", async ({ page }) => {
+  await page.goto("/dashboard/gallery")
+
+  await expect(page.getByRole("heading", { name: "Galerie du mariage" })).toBeVisible()
+  await expect(page.getByText("Aucune photo pour le moment.")).toBeVisible()
+  await expect(page.getByText("Ajouter des photos", { exact: true })).toBeVisible()
+})
+
 test("the guest dashboard renders its management table", async ({ page }) => {
   await page.goto("/dashboard/guests")
 
