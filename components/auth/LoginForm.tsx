@@ -4,10 +4,7 @@ import { startTransition, useActionState } from "react"
 import Link from "next/link"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-import {
-  initialAuthActionState,
-  signInAction,
-} from "@/app/auth/actions"
+import { signInAction } from "@/app/auth/actions"
 import {
   AuthConfigurationNotice,
   AuthFeedback,
@@ -16,6 +13,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { loginSchema, type LoginInput } from "@/lib/auth/schemas"
+import { initialAuthActionState } from "@/lib/auth/action-state"
 
 export default function LoginForm({
   configured,

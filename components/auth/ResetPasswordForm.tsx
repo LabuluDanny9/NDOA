@@ -3,10 +3,7 @@
 import { startTransition, useActionState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-import {
-  initialAuthActionState,
-  updatePasswordAction,
-} from "@/app/auth/actions"
+import { updatePasswordAction } from "@/app/auth/actions"
 import {
   AuthConfigurationNotice,
   AuthFeedback,
@@ -18,6 +15,7 @@ import {
   resetPasswordSchema,
   type ResetPasswordInput,
 } from "@/lib/auth/schemas"
+import { initialAuthActionState } from "@/lib/auth/action-state"
 
 export default function ResetPasswordForm({
   configured,

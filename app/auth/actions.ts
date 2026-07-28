@@ -3,6 +3,7 @@
 import type { AuthError } from "@supabase/supabase-js"
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
+import type { AuthActionState } from "@/lib/auth/action-state"
 import {
   forgotPasswordSchema,
   loginSchema,
@@ -12,16 +13,6 @@ import {
 import { getSafeRedirectPath, getApplicationOrigin } from "@/lib/auth/redirects"
 import { getAuthenticatedRole, getRoleHome } from "@/lib/auth/roles"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
-
-export type AuthActionState = {
-  status: "idle" | "error" | "success"
-  message?: string
-  fieldErrors?: Record<string, string[] | undefined>
-}
-
-export const initialAuthActionState: AuthActionState = {
-  status: "idle",
-}
 
 function validationError(
   fieldErrors: Record<string, string[] | undefined>

@@ -4,10 +4,7 @@ import { startTransition, useActionState } from "react"
 import Link from "next/link"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-import {
-  initialAuthActionState,
-  signUpAction,
-} from "@/app/auth/actions"
+import { signUpAction } from "@/app/auth/actions"
 import {
   AuthConfigurationNotice,
   AuthFeedback,
@@ -16,6 +13,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { registerSchema, type RegisterInput } from "@/lib/auth/schemas"
+import { initialAuthActionState } from "@/lib/auth/action-state"
 
 export default function RegisterForm({ configured }: { configured: boolean }) {
   const [state, dispatch, pending] = useActionState(

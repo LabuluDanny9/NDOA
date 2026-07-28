@@ -47,18 +47,37 @@ test("the invitation QR contains the resolved Next.js slug", async ({ page }) =>
   ).toBeVisible()
 })
 
-test("visible authentication links resolve to explicit pages", async ({
+test("authentication entry points expose complete account flows", async ({
   page,
 }) => {
   await page.goto("/login")
   await expect(
-    page.getByRole("heading", { name: "Connexion bientôt disponible" }),
+    page.getByRole("heading", { name: "Bon retour" }),
   ).toBeVisible()
+  await expect(page.getByLabel("Adresse e-mail")).toBeVisible()
+  await expect(page.getByLabel("Mot de passe", { exact: true })).toBeVisible()
+  await expect(
+    page.getByRole("link", { name: "Mot de passe oublié ?" }),
+  ).toHaveAttribute("href", "/forgot-password")
+  await expect(page.getByText(/Supabase n’est pas configuré/)).toBeVisible()
 
   await page.goto("/register")
   await expect(
-    page.getByRole("heading", {
-      name: "Création de compte bientôt disponible",
-    }),
+    page.getByRole("heading", { name: "Créez votre espace" }),
+  ).toBeVisible()
+  await expect(page.getByLabel("Nom complet")).toBeVisible()
+  await expect(page.getByLabel("Confirmer le mot de passe")).toBeVisible()
+
+  await page.goto("/forgot-password")
+  await expect(
+    page.getByRole("heading", { name: "Réinitialisez votre accès" }),
+  ).toBeVisible()
+
+  await page.goto("/logout")
+  await expect(
+    page.getByRole("heading", { name: "Se déconnecter ?" }),
+  ).toBeVisible()
+  await expect(
+    page.getByRole("button", { name: "Confirmer la déconnexion" }),
   ).toBeVisible()
 })

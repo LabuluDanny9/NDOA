@@ -1,4 +1,4 @@
-import type { AuthActionState } from "@/app/auth/actions"
+import type { AuthActionState } from "@/lib/auth/action-state"
 
 export function AuthFeedback({ state }: { state: AuthActionState }) {
   if (state.status === "idle" || !state.message) {
