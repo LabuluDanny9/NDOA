@@ -104,6 +104,8 @@ Les contrats REST sont décrits dans
 [`docs/STAGE_05_API.md`](docs/STAGE_05_API.md).
 Le cycle de vie des mariages est décrit dans
 [`docs/STAGE_06_WEDDING.md`](docs/STAGE_06_WEDDING.md).
+Le module invités, ses formats d’import/export et ses QR codes sont décrits
+dans [`docs/STAGE_07_GUESTS.md`](docs/STAGE_07_GUESTS.md).
 
 ## Variables d’environnement
 
