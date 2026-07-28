@@ -110,6 +110,8 @@ La projection publique et l’invitation par slug sont décrites dans
 [`docs/STAGE_08_INVITATION.md`](docs/STAGE_08_INVITATION.md).
 Le flux RSVP public et son RPC idempotent sont décrits dans
 [`docs/STAGE_09_RSVP.md`](docs/STAGE_09_RSVP.md).
+Le dashboard KPI, ses agrégats et ses graphiques sont décrits dans
+[`docs/STAGE_10_DASHBOARD.md`](docs/STAGE_10_DASHBOARD.md).
 
 ## Variables d’environnement
 
