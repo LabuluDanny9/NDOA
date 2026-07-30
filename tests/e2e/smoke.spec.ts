@@ -25,6 +25,35 @@ test("the API fails closed when Supabase is not configured", async ({ request })
   await expect(invitationResponse.json()).resolves.toMatchObject({ error: { code: "SUPABASE_NOT_CONFIGURED" } })
 })
 
+test("production metadata and readiness routes are exposed safely", async ({ request }) => {
+  const home = await request.get("/")
+  expect(home.status()).toBe(200)
+  expect(home.headers()["x-content-type-options"]).toBe("nosniff")
+  expect(home.headers()["x-frame-options"]).toBe("DENY")
+
+  const manifest = await request.get("/manifest.webmanifest")
+  expect(manifest.status()).toBe(200)
+  await expect(manifest.json()).resolves.toMatchObject({
+    short_name: "NDOA",
+    display: "standalone",
+  })
+
+  const robots = await request.get("/robots.txt")
+  expect(robots.status()).toBe(200)
+  await expect(robots.text()).resolves.toContain("Disallow: /admin/")
+
+  const sitemap = await request.get("/sitemap.xml")
+  expect(sitemap.status()).toBe(200)
+  await expect(sitemap.text()).resolves.toContain("http://localhost:3100/")
+
+  const health = await request.get("/api/health")
+  expect(health.status()).toBe(503)
+  await expect(health.json()).resolves.toMatchObject({
+    status: "degraded",
+    checks: { app: true, supabaseConfigured: false },
+  })
+})
+
 test("the wedding manager exposes draft publication and duplication in demo mode", async ({ page }) => {
   await page.addInitScript(() => {
     localStorage.setItem("ndoa:weddings:v1", JSON.stringify([{
@@ -77,6 +106,14 @@ test("the invitation workspace queues a demo message", async ({ page }) => {
   await page.getByRole("button", { name: "Mettre en file d’envoi" }).click()
   await expect(page.getByText("Message mis en file")).toBeVisible()
   await expect(page.getByText("invite@example.com")).toBeVisible()
+})
+
+test("the admin workspace exposes protected controls in demo mode", async ({ page }) => {
+  await page.goto("/admin")
+
+  await expect(page.getByRole("heading", { name: "Espace administrateur" })).toBeVisible()
+  await expect(page.getByText("Démonstration locale")).toBeVisible()
+  await expect(page.getByRole("heading", { name: "Utilisateurs et permissions" })).toBeVisible()
 })
 
 test("the guest dashboard renders its management table", async ({ page }) => {

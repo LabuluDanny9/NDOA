@@ -16,3 +16,9 @@ export async function requireApiContext() {
   if (error || !data?.claims?.sub) throw ApiError.unauthorized()
   return { supabase, claims: data.claims }
 }
+
+export async function requireAdminApiContext() {
+  const context = await requireApiContext()
+  if (context.claims.user_role !== "admin") throw ApiError.forbidden("Accès administrateur requis.")
+  return context
+}

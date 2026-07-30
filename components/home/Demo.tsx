@@ -106,6 +106,8 @@ export default function Demo() {
                     alt="Romantic couple"
                     width={640}
                     height={360}
+                    priority
+                    loading="eager"
                     className="h-full w-full object-cover"
                   />
                   <div className="absolute inset-x-0 top-0 flex h-12 items-center justify-center bg-black/20 text-white">

@@ -62,6 +62,7 @@ npm run supabase:types   # génère un fichier de types à examiner
 | `/forgot-password`, `/reset-password` | Récupération de compte |
 | `/admin` | Espace réservé au claim `admin` |
 | `/guest` | Espace réservé au claim `guest` |
+| `/api/health` | Readiness sans secret pour supervision et déploiement |
 
 Les collections REST sont documentées dans
 [`docs/STAGE_05_API.md`](docs/STAGE_05_API.md) : mariages, événements,
@@ -116,6 +117,10 @@ La galerie privée, son upload compressé et ses URLs signées sont décrits dan
 [`docs/STAGE_11_GALLERY.md`](docs/STAGE_11_GALLERY.md).
 La file de communication, les templates et les statuts de livraison sont décrits dans
 [`docs/STAGE_12_NOTIFICATIONS.md`](docs/STAGE_12_NOTIFICATIONS.md).
+Les contrôles d’administration, les permissions et le journal sont décrits dans
+[`docs/STAGE_13_ADMIN.md`](docs/STAGE_13_ADMIN.md).
+La finition production, les métadonnées publiques et la readiness sont décrites
+dans [`docs/STAGE_14_PRODUCTION.md`](docs/STAGE_14_PRODUCTION.md).
 
 ## Variables d’environnement
 
@@ -128,6 +133,11 @@ Sans configuration Supabase, le dashboard reste consultable en mode
 démonstration uniquement avec `NODE_ENV=development` ou `test`. En production,
 le proxy refuse l’accès aux espaces protégés : le déploiement échoue donc
 fermement au lieu d’exposer les données.
+
+Les indicateurs de fournisseurs visibles dans l’administration et `/api/health`
+se pilotent avec `NDOA_EMAIL_PROVIDER_ENABLED`,
+`NDOA_SMS_PROVIDER_ENABLED` et `NDOA_WHATSAPP_PROVIDER_ENABLED`. Ils n’exposent
+aucun secret et servent à signaler les intégrations réellement raccordées.
 
 ## Qualité et CI
 

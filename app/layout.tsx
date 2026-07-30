@@ -23,6 +23,28 @@ export const metadata: Metadata = {
   },
   description:
     "Créez votre mariage, organisez vos invités et partagez une invitation numérique élégante avec NDOA.",
+  applicationName: "NDOA",
+  keywords: ["mariage", "invitation numérique", "RSVP", "NDOA"],
+  manifest: "/manifest.webmanifest",
+  icons: {
+    icon: "/favicon.ico",
+    apple: "/logo.png",
+  },
+  authors: [{ name: "NDOA" }],
+  creator: "NDOA",
+  openGraph: {
+    type: "website",
+    locale: "fr_FR",
+    siteName: "NDOA",
+    title: "NDOA — Mariages et invitations numériques",
+    description: "Créez, partagez et gérez votre invitation de mariage.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "NDOA — Mariages et invitations numériques",
+    description: "Créez, partagez et gérez votre invitation de mariage.",
+  },
+  robots: { index: true, follow: true },
 };
 
 export default function RootLayout({

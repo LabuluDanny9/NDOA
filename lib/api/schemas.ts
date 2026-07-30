@@ -60,4 +60,8 @@ export const messageCreateSchema = z.object({
 }).superRefine((value, context) => {
   if (!value.body && !value.template) context.addIssue({ code: z.ZodIssueCode.custom, path: ["body"], message: "Un message ou un template est requis." })
 })
+export const adminUserUpdateSchema = z.object({
+  status: z.enum(["active", "suspended", "disabled"]).optional(),
+  role: z.enum(["admin", "organizer", "guest"]).optional(),
+}).refine((value) => value.status !== undefined || value.role !== undefined, { message: "Une modification est requise." })
 export const uuidSchema = uuid
