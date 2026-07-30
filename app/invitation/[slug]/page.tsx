@@ -4,6 +4,7 @@ import Countdown from "@/components/invitation/Countdown"
 import Timeline from "@/components/invitation/Timeline"
 import LocationMap from "@/components/invitation/LocationMap"
 import RSVPForm from "@/components/invitation/RSVPForm"
+import RSVPSceneReplica from "@/components/invitation/RSVPSceneReplica"
 import GiftSection from "@/components/invitation/GiftSection"
 import FooterInvitation from "@/components/invitation/FooterInvitation"
 import FloatingMenu from "@/components/invitation/FloatingMenu"
@@ -105,16 +106,7 @@ export default async function InvitationPage({ params }: InvitationPageProps) {
       <FloatingMenu />
       <div className="relative overflow-hidden">
         <section className="relative isolate min-h-screen overflow-hidden bg-blue-950 text-white">
-          <video
-            className="absolute inset-0 h-full w-full object-cover"
-            src="/rsvp.mp4"
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="metadata"
-            aria-hidden="true"
-          />
+          <RSVPSceneReplica />
           <div className="absolute inset-0 bg-gradient-to-br from-blue-950/95 via-blue-900/70 to-amber-500/30" />
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.20),_transparent_32%),radial-gradient(circle_at_bottom_right,_rgba(212,175,55,0.24),_transparent_28%)]" />
           <div className="relative z-10 mx-auto grid min-h-screen max-w-[1440px] items-center gap-8 px-6 py-20 lg:grid-cols-[1.05fr_0.75fr] lg:px-12">

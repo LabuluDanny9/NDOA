@@ -14,6 +14,7 @@ import StorySection from "@/components/wedding/StorySection"
 import ProgramSection from "@/components/wedding/ProgramSection"
 import RSVPSettings from "@/components/wedding/RSVPSettings"
 import ThemeSelector from "@/components/wedding/ThemeSelector"
+import RSVPSceneReplica from "@/components/invitation/RSVPSceneReplica"
 import {
   defaultWeddingValues,
   stepValidationMap,
@@ -269,16 +270,7 @@ export default function WeddingForm({ weddingId, initialValues, localMode = fals
 
         <aside className="space-y-6 rounded-[1.75rem] border border-blue-100 bg-blue-50 p-6">
           <div className="relative overflow-hidden rounded-[1.5rem] bg-blue-950 p-6 text-white shadow-xl">
-            <video
-              className="absolute inset-0 h-full w-full object-cover opacity-35"
-              src="/rsvp.mp4"
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="metadata"
-              aria-hidden="true"
-            />
+            <RSVPSceneReplica compact className="opacity-75" />
             <div className="absolute inset-0 bg-gradient-to-br from-blue-950/90 via-blue-900/70 to-amber-500/30" />
             <div className="relative z-10">
               <p className="text-sm uppercase tracking-[0.24em] text-amber-200">Aperçu invitation</p>

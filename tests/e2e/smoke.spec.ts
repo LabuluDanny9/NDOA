@@ -156,6 +156,13 @@ test("the invitation QR contains the resolved Next.js slug", async ({ page }) =>
   await expect(page.getByText("Merci pour votre réponse !")).toBeVisible()
 })
 
+test("the invitation demo reproduces the RSVP scene without embedding the video file", async ({ page }) => {
+  await page.goto("/invitation/demo")
+
+  await expect(page.getByText("RSVP simple")).toBeVisible()
+  await expect(page.locator('video[src="/rsvp.mp4"]')).toHaveCount(0)
+})
+
 test("authentication entry points expose complete account flows", async ({
   page,
 }) => {
