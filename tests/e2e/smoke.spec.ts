@@ -83,7 +83,7 @@ test("the wedding manager exposes draft publication and duplication in demo mode
 
 test("the dashboard renders live KPI charts in demo mode", async ({ page }) => {
   await page.goto("/dashboard")
-  await expect(page.getByRole("heading", { name: "Vue globale" })).toBeVisible()
+  await expect(page.getByRole("heading", { name: "Vue réelle du mariage" })).toBeVisible()
   await expect(page.getByRole("heading", { name: "Réponses RSVP" })).toBeVisible()
   await expect(page.getByLabel("Graphique des réponses RSVP")).toBeVisible()
   await expect(page.getByText("Dernières actions")).toBeVisible()

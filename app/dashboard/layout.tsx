@@ -25,7 +25,7 @@ export default async function DashboardLayout({
             userRole={userRole}
             userAvatar={viewer?.avatarUrl}
           />
-          <div className="px-4 pb-10 pt-6 sm:px-6 lg:px-8">
+          <div className="mx-auto w-full max-w-none px-4 pb-10 pt-6 sm:px-6 lg:max-w-[calc(100vw-280px)] lg:px-8">
             {children}
           </div>
         </div>

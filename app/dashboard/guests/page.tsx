@@ -132,7 +132,14 @@ export default function GuestsPage() {
           <div className="rounded-[1rem] bg-white p-6 shadow">
             <GuestFilters value={filters} onChange={setFilters} />
             <div className="mt-4">
-              {loading ? <p className="p-6 text-center text-sm text-slate-500">Chargement des invités…</p> : guests.length === 0 ? <EmptyGuestState onAdd={openCreateForm} /> : <GuestTable guests={guests} query={query} filters={filters} onView={handleView} onEdit={openEditForm} onDelete={handleDelete} onDuplicate={handleDuplicate} />}
+              {loading ? (
+                <p className="p-6 text-center text-sm text-slate-500">Chargement des invités…</p>
+              ) : (
+                <div className="space-y-4">
+                  {guests.length === 0 ? <EmptyGuestState onAdd={openCreateForm} /> : null}
+                  <GuestTable guests={guests} query={query} filters={filters} onView={handleView} onEdit={openEditForm} onDelete={handleDelete} onDuplicate={handleDuplicate} />
+                </div>
+              )}
             </div>
           </div>
         </div>

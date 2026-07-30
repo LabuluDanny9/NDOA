@@ -1,17 +1,30 @@
 import type { Guest } from "@/components/guests/types"
-import { mockGuests } from "@/components/guests/mockGuests"
 
 const key = (weddingId: string) => `ndoa:guests:v1:${weddingId}`
+
+function isLegacySeededDemoGuest(guest: Guest) {
+  return (
+    guest.email?.endsWith("@example.com") ||
+    guest.qrCode?.startsWith("QRCODE") ||
+    guest.inviteCode?.startsWith("INV-")
+  )
+}
 
 export function readLocalGuests(weddingId: string): Guest[] {
   if (typeof window === "undefined") return []
   try {
     const stored = JSON.parse(window.localStorage.getItem(key(weddingId)) ?? "null")
-    if (Array.isArray(stored)) return stored as Guest[]
+    if (Array.isArray(stored)) {
+      const guests = stored as Guest[]
+      if (weddingId === "demo-wedding" && guests.some(isLegacySeededDemoGuest)) {
+        const cleaned = guests.filter((guest) => !isLegacySeededDemoGuest(guest))
+        writeLocalGuests(weddingId, cleaned)
+        return cleaned
+      }
+      return guests
+    }
   } catch { /* ignore malformed demo storage */ }
-  const initial = weddingId === "demo-wedding" ? mockGuests : []
-  writeLocalGuests(weddingId, initial)
-  return initial
+  return []
 }
 
 function writeLocalGuests(weddingId: string, guests: Guest[]) {

@@ -1,13 +1,16 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
-import { Activity, CheckCircle2, Clock3, HelpCircle, Send, Users } from "lucide-react"
+import { Activity, CalendarClock, CheckCircle2, Clock3, HelpCircle, Send, Users } from "lucide-react"
 import DashboardCharts from "@/components/dashboard/DashboardCharts"
 import { loadDashboardData, type DashboardData } from "@/lib/dashboard/client"
 
 const emptyDashboard: DashboardData = {
   weddingCount: 0,
   weddingId: null,
+  weddingName: null,
+  weddingDate: null,
+  daysToWedding: null,
   guests: { total: 0, accepted: 0, declined: 0, pending: 0, maybe: 0 },
   upcomingEvents: [],
   activities: [],
@@ -47,22 +50,24 @@ export default function StatsPage() {
     { label: "En attente", value: data.guests.pending, icon: Clock3 },
     { label: "Taux de réponse", value: `${responseRate}%`, icon: Send },
     { label: "Peut-être", value: data.guests.maybe, icon: HelpCircle },
+    { label: "Jours restants", value: data.daysToWedding ?? "—", icon: CalendarClock },
   ]
 
   return (
     <main className="space-y-8">
       <section className="rounded-[2rem] bg-gradient-to-br from-blue-800 via-blue-700 to-blue-600 p-8 text-white shadow-xl shadow-blue-950/20">
         <p className="text-sm uppercase tracking-[0.3em] text-amber-200">Statistiques</p>
-        <h1 className="mt-3 text-3xl font-semibold">Pilotage complet des RSVP</h1>
+        <h1 className="mt-3 text-3xl font-semibold">Pilotage des données réelles</h1>
         <p className="mt-3 max-w-3xl text-sm leading-6 text-blue-50">
-          Suivez les confirmations, les refus, les invités en attente et les prochaines actions à relancer.
+          Les chiffres affichés correspondent au mariage sélectionné : {data.weddingName ?? "aucun mariage sélectionné"}.
+          Aucun invité ou table de démonstration n’est ajouté automatiquement.
         </p>
         <div className="mt-5 inline-flex rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm text-blue-50">
-          Source : {data.source === "api" ? "Supabase connecté" : "mode local / démonstration"}
+          Source : {data.source === "api" ? "Supabase connecté" : "données locales réellement enregistrées"}
         </div>
       </section>
 
-      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-6">
         {cards.map((card) => {
           const Icon = card.icon
           return (
@@ -96,7 +101,7 @@ export default function StatsPage() {
               <time className="text-slate-400">{new Date(activity.occurred_at).toLocaleString("fr-FR")}</time>
             </div>
           )) : (
-            <p className="py-6 text-sm text-slate-500">Aucune activité récente à afficher pour le moment.</p>
+            <p className="py-6 text-sm text-slate-500">Aucune activité récente à afficher pour ce mariage.</p>
           )}
         </div>
       </section>

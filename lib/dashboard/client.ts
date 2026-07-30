@@ -6,6 +6,9 @@ import { readLocalWeddings as readLocalWeddingRecords } from "@/lib/weddings/loc
 export interface DashboardData {
   weddingCount: number
   weddingId: string | null
+  weddingName: string | null
+  weddingDate: string | null
+  daysToWedding: number | null
   guests: { total: number; accepted: number; declined: number; pending: number; maybe: number }
   upcomingEvents: Array<{ id: string; title: string; starts_at: string; venue_name: string | null; city: string | null }>
   activities: Array<{ id: number; entity_type: string; action: string; occurred_at: string }>
@@ -30,20 +33,30 @@ function aggregateLocalGuests(guests: Guest[]) {
   }
 }
 
+function daysUntil(date: string | null | undefined) {
+  if (!date) return null
+  const target = new Date(`${date}T00:00:00`).getTime()
+  if (Number.isNaN(target)) return null
+  return Math.max(0, Math.ceil((target - Date.now()) / 86_400_000))
+}
+
 export async function loadDashboardData(): Promise<DashboardData> {
   try {
     const response = await listWeddings()
     const first = response.items[0]
-    if (!first) return { weddingCount: 0, weddingId: null, guests: { total: 0, accepted: 0, declined: 0, pending: 0, maybe: 0 }, upcomingEvents: [], activities: [], notifications: [], source: "api" }
+    if (!first) return { weddingCount: 0, weddingId: null, weddingName: null, weddingDate: null, daysToWedding: null, guests: { total: 0, accepted: 0, declined: 0, pending: 0, maybe: 0 }, upcomingEvents: [], activities: [], notifications: [], source: "api" }
     const dashboard = await requestDashboard(first.id)
-    return { ...dashboard, weddingCount: response.items.length, weddingId: first.id, source: "api" }
+    return { ...dashboard, weddingCount: response.items.length, weddingId: first.id, weddingName: first.name, weddingDate: first.wedding_date, daysToWedding: daysUntil(first.wedding_date), source: "api" }
   } catch {
     const weddings = readLocalWeddingRecords()
-    const weddingId = weddings[0]?.id ?? "demo-wedding"
-    const guests = readLocalGuests(weddingId)
+    const first = weddings[0] ?? null
+    const guests = first ? readLocalGuests(first.id) : []
     return {
       weddingCount: weddings.length,
-      weddingId: weddings[0]?.id ?? null,
+      weddingId: first?.id ?? null,
+      weddingName: first?.name ?? null,
+      weddingDate: first?.weddingDate ?? null,
+      daysToWedding: daysUntil(first?.weddingDate),
       guests: aggregateLocalGuests(guests),
       upcomingEvents: [],
       activities: guests.slice(0, 6).map((guest, index) => ({ id: index, entity_type: "guests", action: "created", occurred_at: guest.createdAt })),

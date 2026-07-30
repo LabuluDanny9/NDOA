@@ -108,7 +108,7 @@ export default function Sidebar({
 
       <aside
         className={cn(
-          "hidden lg:flex h-full min-h-screen w-[280px] flex-col border-r border-gray-200/70 bg-white",
+          "fixed inset-y-0 left-0 z-30 hidden w-[280px] flex-col border-r border-gray-200/70 bg-white lg:flex",
           className
         )}
       >
