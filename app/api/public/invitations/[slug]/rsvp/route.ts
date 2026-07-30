@@ -6,8 +6,9 @@ import { createServerSupabaseClient } from "@/lib/supabase/server"
 
 const slugSchema = z.string().trim().min(3).max(80).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
 const rsvpSchema = z.object({
-  fullName: z.string().trim().min(2).max(200),
-  email: z.string().trim().email().max(254),
+  firstName: z.string().trim().min(2).max(100),
+  lastName: z.string().trim().min(2).max(100),
+  phone: z.string().trim().min(6).max(32),
   response: z.enum(["pending", "accepted", "declined", "maybe"]),
   companionsCount: z.number().int().min(0).max(20).default(0),
   comments: z.string().trim().max(5000).optional().nullable(),
@@ -22,8 +23,9 @@ export async function POST(request: NextRequest, context: RouteContext) {
     const supabase = await createServerSupabaseClient()
     const { data, error } = await supabase.rpc("submit_public_rsvp", {
       target_slug: slug,
-      guest_full_name: input.fullName,
-      guest_email: input.email,
+      guest_first_name: input.firstName,
+      guest_last_name: input.lastName,
+      guest_phone: input.phone,
       target_response: input.response,
       target_companions_count: input.companionsCount,
       target_comments: input.comments ?? null,

@@ -1,15 +1,11 @@
 import type { Metadata } from "next"
 import HeroInvitation from "@/components/invitation/HeroInvitation"
 import Countdown from "@/components/invitation/Countdown"
-import CoupleGallery from "@/components/invitation/CoupleGallery"
-import LoveStory from "@/components/invitation/LoveStory"
 import Timeline from "@/components/invitation/Timeline"
 import LocationMap from "@/components/invitation/LocationMap"
 import RSVPForm from "@/components/invitation/RSVPForm"
 import GiftSection from "@/components/invitation/GiftSection"
-import PhotoGallery from "@/components/invitation/PhotoGallery"
 import FooterInvitation from "@/components/invitation/FooterInvitation"
-import MusicPlayer from "@/components/invitation/MusicPlayer"
 import FloatingMenu from "@/components/invitation/FloatingMenu"
 import ShareButtons from "@/components/invitation/ShareButtons"
 import QRCodeCard from "@/components/invitation/QRCodeCard"
@@ -105,36 +101,45 @@ export default async function InvitationPage({ params }: InvitationPageProps) {
   const eventUrl = new URL(`/invitation/${encodeURIComponent(slug)}`, appUrl).toString()
 
   return (
-    <div className="min-h-screen bg-[#08060f] text-white">
+    <div className="min-h-screen bg-blue-50 text-slate-950">
       <FloatingMenu />
       <div className="relative overflow-hidden">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.16),_transparent_35%),radial-gradient(circle_at_bottom_right,_rgba(255,199,102,0.16),_transparent_25%)]" />
-        <div className="relative z-10 mx-auto flex min-h-screen max-w-[1440px] flex-col gap-16 px-6 py-10 lg:px-12">
-          <header className="grid gap-10 lg:grid-cols-[0.9fr_0.8fr]">
-            <div className="space-y-8">
+        <section className="relative isolate min-h-screen overflow-hidden bg-blue-950 text-white">
+          <video
+            className="absolute inset-0 h-full w-full object-cover"
+            src="/rsvp.mp4"
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="metadata"
+            aria-hidden="true"
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-950/95 via-blue-900/70 to-amber-500/30" />
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.20),_transparent_32%),radial-gradient(circle_at_bottom_right,_rgba(212,175,55,0.24),_transparent_28%)]" />
+          <div className="relative z-10 mx-auto grid min-h-screen max-w-[1440px] items-center gap-8 px-6 py-20 lg:grid-cols-[1.05fr_0.75fr] lg:px-12">
+            <div className="space-y-6">
               <HeroInvitation couple={invitation.couple} />
               <div className="grid gap-4 md:grid-cols-2">
                 <Countdown targetDate={invitation.couple.date} />
                 <ShareButtons url={eventUrl} />
               </div>
             </div>
-            <div className="space-y-6">
-              <MusicPlayer track={invitation.music} />
+            <div className="space-y-5">
+              <RSVPForm slug={slug} />
               <QRCodeCard url={eventUrl} code="NDOA-2026" />
             </div>
-          </header>
+          </div>
+        </section>
 
-          <section className="grid gap-10 lg:grid-cols-[1.2fr_0.8fr]">
-            <div className="space-y-10">
-              <CoupleGallery images={invitation.gallery} />
-              <LoveStory story={invitation.story} />
+        <div className="relative z-10 mx-auto flex max-w-[1440px] flex-col gap-12 px-6 py-12 lg:px-12">
+          <section className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+            <div className="space-y-8">
               <Timeline items={invitation.timeline} />
-              <PhotoGallery images={invitation.gallery} />
-            </div>
-            <aside className="space-y-8">
-              <LocationMap location={invitation.couple.location} address={invitation.couple.address} />
-              <RSVPForm slug={slug} />
               <GiftSection gifts={invitation.gifts} />
+            </div>
+            <aside className="space-y-6">
+              <LocationMap location={invitation.couple.location} address={invitation.couple.address} />
             </aside>
           </section>
 

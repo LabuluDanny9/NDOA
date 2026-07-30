@@ -73,9 +73,21 @@ export default function WeddingForm({ weddingId, initialValues, localMode = fals
     if (initialValues) reset(initialValues)
   }, [initialValues, reset])
 
-  const [weddingName, groomName, brideName] = useWatch({
+  const [
+    weddingName,
+    groomName,
+    brideName,
+    weddingDate,
+    weddingTime,
+    slogan,
+    venueName,
+    city,
+    primaryColor,
+    secondaryColor,
+    programs,
+  ] = useWatch({
     control,
-    name: ["weddingName", "groomName", "brideName"],
+    name: ["weddingName", "groomName", "brideName", "date", "time", "slogan", "venueName", "city", "primaryColor", "secondaryColor", "programs"],
   })
 
   const renderCurrentSection = () => {
@@ -176,6 +188,10 @@ export default function WeddingForm({ weddingId, initialValues, localMode = fals
 
   const preview = weddingName || "Votre mariage"
   const couple = `${groomName || "Marié"} & ${brideName || "Mariée"}`
+  const formattedDate = weddingDate
+    ? new Date(`${weddingDate}T${weddingTime || "12:00"}`).toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" })
+    : "Date à définir"
+  const previewProgram = Array.isArray(programs) ? programs.slice(0, 2) : []
 
   return (
     <Card className="overflow-hidden rounded-[2rem] bg-white shadow-[0_30px_80px_rgba(15,23,42,0.08)]">
@@ -193,8 +209,8 @@ export default function WeddingForm({ weddingId, initialValues, localMode = fals
           </div>
         </div>
 
-        <div className="mt-6 h-2 overflow-hidden rounded-full bg-slate-200">
-          <div className="h-full rounded-full bg-amber-500 transition-all duration-300" style={{ width: `${progress}%` }} />
+          <div className="mt-6 h-2 overflow-hidden rounded-full bg-blue-100">
+          <div className="h-full rounded-full bg-gradient-to-r from-blue-700 to-amber-400 transition-all duration-300" style={{ width: `${progress}%` }} />
         </div>
       </CardHeader>
 
@@ -251,18 +267,50 @@ export default function WeddingForm({ weddingId, initialValues, localMode = fals
           </AnimatePresence>
         </div>
 
-        <aside className="space-y-6 rounded-[1.75rem] border border-slate-200 bg-slate-50 p-6">
+        <aside className="space-y-6 rounded-[1.75rem] border border-blue-100 bg-blue-50 p-6">
+          <div className="relative overflow-hidden rounded-[1.5rem] bg-blue-950 p-6 text-white shadow-xl">
+            <video
+              className="absolute inset-0 h-full w-full object-cover opacity-35"
+              src="/rsvp.mp4"
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              aria-hidden="true"
+            />
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-950/90 via-blue-900/70 to-amber-500/30" />
+            <div className="relative z-10">
+              <p className="text-sm uppercase tracking-[0.24em] text-amber-200">Aperçu invitation</p>
+              <h2 className="mt-4 text-2xl font-semibold">{preview}</h2>
+              <p className="mt-2 text-sm text-blue-50">{couple}</p>
+              <p className="mt-4 text-sm leading-6 text-blue-50">{slogan || "Votre slogan apparaîtra ici."}</p>
+              <div className="mt-6 grid gap-3">
+                <div className="rounded-3xl bg-white/95 px-4 py-3 text-sm text-slate-900">
+                  <span className="font-semibold text-blue-700">Date</span> : {formattedDate}
+                  {weddingTime ? ` à ${weddingTime}` : ""}
+                </div>
+                <div className="rounded-3xl bg-white/95 px-4 py-3 text-sm text-slate-900">
+                  <span className="font-semibold text-blue-700">Lieu</span> : {[venueName, city].filter(Boolean).join(", ") || "Lieu à définir"}
+                </div>
+              </div>
+              <div className="mt-5 flex gap-2">
+                <span className="h-8 flex-1 rounded-full border border-white/30" style={{ backgroundColor: primaryColor || "#1d4ed8" }} />
+                <span className="h-8 flex-1 rounded-full border border-white/30" style={{ backgroundColor: secondaryColor || "#d4af37" }} />
+              </div>
+            </div>
+          </div>
+
           <div className="rounded-[1.5rem] bg-white p-6 shadow-sm">
-            <p className="text-sm uppercase tracking-[0.24em] text-muted-foreground">Aperçu</p>
-            <h2 className="mt-4 text-xl font-semibold text-slate-900">{preview}</h2>
-            <p className="mt-2 text-sm text-slate-600">{couple}</p>
-            <div className="mt-6 grid gap-3">
-              <div className="rounded-3xl bg-slate-100 px-4 py-3 text-sm text-slate-700">
-                <span className="font-semibold">Persistance</span> : {localMode ? "locale (démo)" : "API Supabase"}
-              </div>
-              <div className="rounded-3xl bg-slate-100 px-4 py-3 text-sm text-slate-700">
-                <span className="font-semibold">Étape actuelle</span> : {stepLabels[currentStep]}
-              </div>
+            <p className="text-sm uppercase tracking-[0.24em] text-blue-700">Programme aperçu</p>
+            <div className="mt-4 space-y-3">
+              {previewProgram.length ? previewProgram.map((program, index) => (
+                <div key={`${program.eventName}-${index}`} className="rounded-2xl bg-blue-50 px-4 py-3 text-sm text-slate-700">
+                  <span className="font-semibold text-slate-950">{program.time || "Heure"}</span> · {program.eventName || "Événement"}
+                </div>
+              )) : (
+                <p className="text-sm text-slate-600">Ajoutez le programme pour le voir dans l’aperçu.</p>
+              )}
             </div>
           </div>
 

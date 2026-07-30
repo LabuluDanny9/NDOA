@@ -86,7 +86,7 @@ export default function Sidebar({
       <div className="lg:hidden">
         <div className="fixed inset-x-0 top-0 z-40 flex items-center justify-between border-b border-gray-200/70 bg-white/95 px-4 py-3 shadow-sm backdrop-blur-sm">
           <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-amber-500 text-white shadow-sm">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-blue-700 text-white shadow-sm ring-2 ring-amber-300/60">
               N
             </div>
             <div>
@@ -114,7 +114,7 @@ export default function Sidebar({
       >
         <div className="flex min-h-0 flex-1 flex-col px-4 py-6">
           <div className="mb-6 flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-3xl bg-amber-500 text-xl font-semibold text-white shadow-sm">
+            <div className="flex h-12 w-12 items-center justify-center rounded-3xl bg-blue-700 text-xl font-semibold text-white shadow-sm ring-2 ring-amber-300/60">
               N
             </div>
             <div>
@@ -139,15 +139,15 @@ export default function Sidebar({
                     className={cn(
                       "group flex items-center gap-3 rounded-2xl px-3 py-3 text-sm font-medium transition-colors duration-150",
                       isActive
-                        ? "bg-amber-100 text-amber-700 shadow-sm"
-                        : "text-muted-foreground hover:bg-gray-100 hover:text-foreground"
+                        ? "bg-blue-50 text-blue-700 shadow-sm"
+                        : "text-muted-foreground hover:bg-blue-50 hover:text-blue-700"
                     )}
                     aria-current={isActive ? "page" : undefined}
                   >
                     <Icon
                       className={cn(
                         "size-5 transition-colors duration-150",
-                        isActive ? "text-amber-600" : "text-muted-foreground"
+                        isActive ? "text-blue-700" : "text-muted-foreground"
                       )}
                       aria-hidden="true"
                     />
@@ -158,7 +158,7 @@ export default function Sidebar({
             })}
           </nav>
 
-          <div className="mt-auto rounded-3xl border border-gray-200/80 bg-slate-50 p-4">
+          <div className="mt-auto rounded-3xl border border-blue-100 bg-blue-50 p-4">
             <div className="flex items-center gap-3">
               <Avatar className="h-11 w-11">
                 {userAvatar ? (
@@ -202,7 +202,7 @@ export default function Sidebar({
             >
               <div className="flex items-center justify-between border-b border-gray-200/80 px-4 py-4">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-3xl bg-amber-500 text-xl font-semibold text-white shadow-sm">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-3xl bg-blue-700 text-xl font-semibold text-white shadow-sm ring-2 ring-amber-300/60">
                     N
                   </div>
                   <div>
@@ -238,8 +238,8 @@ export default function Sidebar({
                           className={cn(
                             "group flex items-center gap-3 rounded-2xl px-3 py-3 text-sm font-medium transition-colors duration-150",
                             isActive
-                              ? "bg-amber-100 text-amber-700 shadow-sm"
-                              : "text-muted-foreground hover:bg-gray-100 hover:text-foreground"
+                              ? "bg-blue-50 text-blue-700 shadow-sm"
+                              : "text-muted-foreground hover:bg-blue-50 hover:text-blue-700"
                           )}
                           onClick={() => setDrawerOpen(false)}
                           aria-current={isActive ? "page" : undefined}
@@ -247,7 +247,7 @@ export default function Sidebar({
                           <Icon
                             className={cn(
                               "size-5 transition-colors duration-150",
-                              isActive ? "text-amber-600" : "text-muted-foreground"
+                              isActive ? "text-blue-700" : "text-muted-foreground"
                             )}
                             aria-hidden="true"
                           />

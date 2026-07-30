@@ -608,8 +608,9 @@ export type Database = {
       submit_public_rsvp: {
         Args: {
           target_slug: string
-          guest_full_name: string
-          guest_email: string
+          guest_first_name: string
+          guest_last_name: string
+          guest_phone: string
           target_response: RsvpResponse
           target_companions_count?: number
           target_comments?: string | null

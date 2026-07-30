@@ -29,6 +29,11 @@ export default defineConfig({
     env: {
       ...process.env,
       NEXT_PUBLIC_APP_URL: baseURL,
+      NEXT_PUBLIC_SUPABASE_URL: "",
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: "",
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: "",
+      SUPABASE_SERVICE_ROLE_KEY: "",
+      SUPABASE_DATABASE_URL: "",
     },
   },
 })

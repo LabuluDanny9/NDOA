@@ -129,6 +129,7 @@ test("an organizer can add and search for a local guest", async ({ page }) => {
 
   const dialog = page.getByRole("dialog")
   await dialog.getByLabel("Nom", { exact: true }).fill("Validation")
+  await dialog.getByLabel("Téléphone", { exact: true }).fill("+243 99 000 111")
   await dialog.getByLabel("Prénom", { exact: true }).fill("E2E")
   await dialog.getByRole("button", { name: "Ajouter" }).click()
 
@@ -148,8 +149,9 @@ test("the invitation QR contains the resolved Next.js slug", async ({ page }) =>
   await expect(
     page.getByLabel(/QR code pour .*\/invitation\/demo/),
   ).toBeVisible()
-  await page.getByLabel("Nom complet").fill("Invité Démo")
-  await page.getByLabel("Email").fill("invite.demo@example.com")
+  await page.getByLabel("Prénom").fill("Invité")
+  await page.getByLabel("Nom", { exact: true }).fill("DÃ©mo")
+  await page.getByLabel("Numéro de téléphone").fill("+243 99 000 222")
   await page.getByRole("button", { name: "Envoyer ma réponse" }).click()
   await expect(page.getByText("Merci pour votre réponse !")).toBeVisible()
 })

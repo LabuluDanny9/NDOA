@@ -29,7 +29,7 @@ export default function GuestToolbar({
           type="search"
           value={query}
           className="pl-9"
-          placeholder="Rechercher par nom, téléphone ou email…"
+          placeholder="Rechercher par nom ou téléphone…"
           aria-label="Rechercher un invité"
           onChange={(event) => onQueryChange(event.target.value)}
         />

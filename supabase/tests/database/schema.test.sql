@@ -133,7 +133,7 @@ select ok(
 );
 
 select ok(
-  to_regprocedure('public.submit_public_rsvp(text, text, text, public.rsvp_response, smallint, text)') is not null,
+  to_regprocedure('public.submit_public_rsvp(text, text, text, text, public.rsvp_response, integer, text)') is not null,
   'public RSVP function exists'
 );
 

@@ -76,7 +76,7 @@ export default function Topbar({
               <Input
                 type="search"
                 placeholder="Rechercher"
-                className="w-80 rounded-full border-gray-200 bg-slate-100 px-4 py-2 text-sm text-foreground placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-amber-300"
+                className="w-80 rounded-full border-blue-100 bg-blue-50 px-4 py-2 text-sm text-foreground placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-blue-200"
               />
               <Search className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             </div>
@@ -109,7 +109,7 @@ export default function Topbar({
           <motion.div whileHover={{ y: -1 }}>
             <Button
               asChild
-              className="hidden h-12 rounded-xl bg-amber-500 px-4 text-sm font-semibold text-white shadow-md shadow-amber-200 transition hover:bg-amber-600 md:inline-flex"
+              className="hidden h-12 rounded-xl bg-blue-700 px-4 text-sm font-semibold text-white shadow-md shadow-blue-200 transition hover:bg-blue-800 md:inline-flex"
               size="sm"
             >
               <Link href="/dashboard/create-wedding">
