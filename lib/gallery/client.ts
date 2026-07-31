@@ -31,10 +31,19 @@ export async function listPhotos(weddingId: string) {
   return request<{ items: GalleryPhoto[] }>(`/api/weddings/${encodeURIComponent(weddingId)}/photos`)
 }
 
-export async function uploadPhoto(weddingId: string, blob: Blob, originalName: string, position: number) {
+export async function uploadPhoto(
+  weddingId: string,
+  blob: Blob,
+  originalName: string,
+  position: number,
+  options?: { publishOnInvitation?: boolean; caption?: string; altText?: string },
+) {
   const form = new FormData()
   form.set("file", new File([blob], originalName.replace(/[^a-zA-Z0-9._-]/g, "_"), { type: blob.type || "image/webp" }))
   form.set("position", String(position))
+  if (options?.publishOnInvitation) form.set("publishOnInvitation", "true")
+  if (options?.caption) form.set("caption", options.caption)
+  if (options?.altText) form.set("altText", options.altText)
   return request<GalleryPhoto>(`/api/weddings/${encodeURIComponent(weddingId)}/photos`, { method: "POST", body: form })
 }
 

@@ -150,8 +150,9 @@ test("the invitation QR contains the resolved Next.js slug", async ({ page }) =>
     page.getByLabel(/QR code pour .*\/invitation\/demo/),
   ).toBeVisible()
   await page.getByLabel("Prénom").fill("Invité")
-  await page.getByLabel("Nom", { exact: true }).fill("DÃ©mo")
+  await page.getByLabel("Nom", { exact: true }).fill("Démo")
   await page.getByLabel("Numéro de téléphone").fill("+243 99 000 222")
+  await page.getByLabel("Mot pour les mariés").fill("Félicitations aux mariés.")
   await page.getByRole("button", { name: "Envoyer ma réponse" }).click()
   await expect(page.getByText("Merci pour votre réponse !")).toBeVisible()
 })

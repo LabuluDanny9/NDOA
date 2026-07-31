@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import Image from "next/image"
 import HeroInvitation from "@/components/invitation/HeroInvitation"
 import Countdown from "@/components/invitation/Countdown"
 import Timeline from "@/components/invitation/Timeline"
@@ -63,6 +64,7 @@ function publicInvitationToView(value: PublicInvitation) {
   const timeline = value.events.length > 0
     ? value.events.map((event) => ({ time: new Date(event.startsAt).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }), title: event.title, description: event.description ?? "Retrouvons-nous pour ce moment important." }))
     : value.programs.map((program) => ({ time: new Date(program.scheduledAt).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }), title: program.title, description: program.description ?? "" }))
+  const photos = value.photos.map((photo) => photo.url).filter((url): url is string => Boolean(url))
   return {
     couple: {
       bride: value.partnerTwoName,
@@ -74,7 +76,7 @@ function publicInvitationToView(value: PublicInvitation) {
     },
     story: [{ year: "Aujourd’hui", title: value.name, description: value.description ?? "Merci de partager cette célébration avec nous." }],
     timeline: timeline.length > 0 ? timeline : demoInvitation.timeline,
-    gallery: value.photos.length > 0 ? value.photos.map(() => "/hero.jpg") : demoInvitation.gallery,
+    gallery: photos.length > 0 ? photos : demoInvitation.gallery,
     gifts: value.gifts.map((gift) => ({ title: gift.name, description: gift.description ?? "Une attention pour accompagner notre nouvelle vie." })),
     music: { ...demoInvitation.music, source: value.settings.musicSource ?? demoInvitation.music.source },
   }
@@ -106,7 +108,7 @@ export default async function InvitationPage({ params }: InvitationPageProps) {
       <FloatingMenu />
       <div className="relative overflow-hidden">
         <section className="relative isolate min-h-screen overflow-hidden bg-blue-950 text-white">
-          <RSVPSceneReplica />
+          <RSVPSceneReplica images={invitation.gallery} couple={invitation.couple} />
           <div className="absolute inset-0 bg-gradient-to-br from-blue-950/95 via-blue-900/70 to-amber-500/30" />
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.20),_transparent_32%),radial-gradient(circle_at_bottom_right,_rgba(212,175,55,0.24),_transparent_28%)]" />
           <div className="relative z-10 mx-auto grid min-h-screen max-w-[1440px] items-center gap-8 px-6 py-20 lg:grid-cols-[1.05fr_0.75fr] lg:px-12">
@@ -115,6 +117,13 @@ export default async function InvitationPage({ params }: InvitationPageProps) {
               <div className="grid gap-4 md:grid-cols-2">
                 <Countdown targetDate={invitation.couple.date} />
                 <ShareButtons url={eventUrl} />
+              </div>
+              <div className="grid grid-cols-3 gap-3 pt-2 sm:max-w-xl">
+                {invitation.gallery.slice(0, 3).map((image, index) => (
+                  <div key={`${image}-${index}`} className="relative aspect-[4/5] overflow-hidden rounded-[1.5rem] border border-white/20 bg-white/10 shadow-xl shadow-blue-950/20">
+                    <Image src={image} alt="" fill unoptimized sizes="(max-width: 640px) 30vw, 12rem" className="object-cover" />
+                  </div>
+                ))}
               </div>
             </div>
             <div className="space-y-5">
@@ -133,6 +142,34 @@ export default async function InvitationPage({ params }: InvitationPageProps) {
             <aside className="space-y-6">
               <LocationMap location={invitation.couple.location} address={invitation.couple.address} />
             </aside>
+          </section>
+
+          <section className="rounded-[2rem] bg-white p-6 shadow-sm sm:p-8">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <p className="text-sm uppercase tracking-[0.24em] text-blue-700">Photos</p>
+                <h2 className="mt-2 text-3xl font-semibold text-slate-950">Notre galerie</h2>
+              </div>
+              <p className="max-w-xl text-sm leading-6 text-slate-600">
+                Les images affichées ici sont celles téléversées par l’organisateur pour cette invitation.
+              </p>
+            </div>
+            <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+              {invitation.gallery.slice(0, 5).map((image, index) => (
+                <figure key={`${image}-gallery-${index}`} className="group overflow-hidden rounded-[1.5rem] bg-blue-50 shadow-sm">
+                  <div className="relative aspect-[4/5] overflow-hidden">
+                    <Image
+                      src={image}
+                      alt={`Photo ${index + 1} du mariage`}
+                      fill
+                      unoptimized
+                      sizes="(max-width: 640px) 100vw, 20vw"
+                      className="object-cover transition duration-500 group-hover:scale-105"
+                    />
+                  </div>
+                </figure>
+              ))}
+            </div>
           </section>
 
           <FooterInvitation couple={invitation.couple} />

@@ -14,7 +14,7 @@ import type { Guest, GuestFilterValues } from "@/components/guests/types"
 import { useToast } from "@/components/ui/toast"
 import { createGuest, deleteGuest, fromGuestApiRow, listGuests, updateGuest, GuestClientError } from "@/lib/guests/client"
 import { deleteLocalGuest, duplicateLocalGuest, readLocalGuests, saveLocalGuest } from "@/lib/guests/local-store"
-import { readLocalWeddings } from "@/lib/weddings/local-store"
+import { resolveActiveWedding } from "@/lib/weddings/active"
 
 function copyId() {
   return typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2)
@@ -23,7 +23,7 @@ function copyId() {
 export default function GuestsPage() {
   const { toast } = useToast()
   const [guests, setGuests] = React.useState<Guest[]>([])
-  const [weddingId, setWeddingId] = React.useState("demo-wedding")
+  const [weddingId, setWeddingId] = React.useState<string | null>(null)
   const [dataSource, setDataSource] = React.useState<"api" | "local">("local")
   const [loading, setLoading] = React.useState(true)
   const [query, setQuery] = React.useState("")
@@ -33,8 +33,14 @@ export default function GuestsPage() {
   const [formOpen, setFormOpen] = React.useState(false)
   const [editingGuest, setEditingGuest] = React.useState<Guest | null>(null)
 
-  const loadGuests = React.useCallback(async (targetWeddingId: string) => {
+  const loadGuests = React.useCallback(async (targetWeddingId: string, preferredSource: "api" | "local" = "api") => {
     setLoading(true)
+    if (preferredSource === "local") {
+      setGuests(readLocalGuests(targetWeddingId))
+      setDataSource("local")
+      setLoading(false)
+      return
+    }
     try {
       const response = await listGuests(targetWeddingId)
       setGuests(response.items.map(fromGuestApiRow))
@@ -52,9 +58,16 @@ export default function GuestsPage() {
 
   React.useEffect(() => {
     const timer = window.setTimeout(() => {
-      const target = readLocalWeddings()[0]?.id ?? "demo-wedding"
-      setWeddingId(target)
-      void loadGuests(target)
+      void resolveActiveWedding().then((active) => {
+        const target = active.wedding?.id ?? null
+        setWeddingId(target)
+        setDataSource(active.source)
+        if (target) void loadGuests(target, active.source)
+        else {
+          setGuests([])
+          setLoading(false)
+        }
+      })
     }, 0)
     return () => window.clearTimeout(timer)
   }, [loadGuests])
@@ -66,6 +79,7 @@ export default function GuestsPage() {
   async function handleSave(guest: Guest) {
     const isEditing = guests.some((item) => item.id === guest.id)
     try {
+      if (!weddingId) throw new Error("Créez d’abord un mariage avant d’ajouter des invités.")
       const saved = dataSource === "api"
         ? fromGuestApiRow(isEditing ? await updateGuest(weddingId, guest) : await createGuest(weddingId, guest))
         : saveLocalGuest(weddingId, guest)
@@ -81,6 +95,7 @@ export default function GuestsPage() {
   async function handleDelete(guest: Guest) {
     if (!window.confirm(`Supprimer ${guest.firstName} ${guest.lastName} de la liste ?`)) return
     try {
+      if (!weddingId) return
       if (dataSource === "api") await deleteGuest(weddingId, guest.id)
       else deleteLocalGuest(weddingId, guest.id)
       setGuests((current) => current.filter((item) => item.id !== guest.id))
@@ -94,6 +109,7 @@ export default function GuestsPage() {
     const now = new Date().toISOString()
     const draft: Guest = { ...guest, id: `copy-${copyId()}`, lastName: `${guest.lastName} (copie)`, inviteCode: undefined, qrCode: undefined, createdAt: now, updatedAt: now }
     try {
+      if (!weddingId) throw new Error("Créez d’abord un mariage avant de dupliquer un invité.")
       const saved = dataSource === "api" ? fromGuestApiRow(await createGuest(weddingId, draft)) : duplicateLocalGuest(weddingId, guest)
       setGuests((current) => [saved, ...current])
       toast({ title: "Invité dupliqué", description: `Une copie de ${guest.firstName} ${guest.lastName} a été créée.`, variant: "success" })
@@ -104,6 +120,7 @@ export default function GuestsPage() {
 
   async function handleImport(importedGuests: Guest[]) {
     try {
+      if (!weddingId) throw new Error("Créez d’abord un mariage avant d’importer des invités.")
       const saved = dataSource === "api"
         ? (await Promise.all(importedGuests.map((guest) => createGuest(weddingId, guest)))).map(fromGuestApiRow)
         : importedGuests.map((guest) => saveLocalGuest(weddingId, guest))

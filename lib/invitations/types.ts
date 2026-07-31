@@ -50,6 +50,13 @@ export interface PublicInvitation {
   settings: Record<string, string | null>
   events: PublicInvitationEvent[]
   programs: PublicInvitationProgram[]
-  photos: Array<{ id: string; storagePath: string; thumbnailPath: string | null; altText: string | null; caption: string | null }>
+  photos: Array<{
+    id: string
+    storagePath: string
+    thumbnailPath: string | null
+    altText: string | null
+    caption: string | null
+    url?: string | null
+  }>
   gifts: PublicInvitationGift[]
 }

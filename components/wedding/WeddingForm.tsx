@@ -1,7 +1,7 @@
 ﻿"use client"
 
 import { AnimatePresence, motion } from "framer-motion"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { type SubmitHandler, useForm, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { ArrowLeft, ArrowRight } from "lucide-react"
@@ -27,6 +27,7 @@ import {
   updateWedding,
   WeddingClientError,
 } from "@/lib/weddings/client"
+import { uploadPhoto } from "@/lib/gallery/client"
 import {
   createLocalWedding,
   updateLocalWedding,
@@ -48,6 +49,21 @@ const stepLabels = [
   "RSVP",
   "Personnalisation",
 ] as const
+
+async function uploadInvitationPhotos(weddingId: string, values: WeddingFormValues) {
+  const files = [
+    ...(values.coverPhoto ? [{ file: values.coverPhoto, caption: "Photo de couverture" }] : []),
+    ...values.galleryPhotos.map((file, index) => ({ file, caption: `Photo du couple ${index + 1}` })),
+  ]
+
+  for (const [position, item] of files.entries()) {
+    await uploadPhoto(weddingId, item.file, item.file.name, position, {
+      publishOnInvitation: true,
+      caption: item.caption,
+      altText: `${values.groomName} & ${values.brideName}`,
+    })
+  }
+}
 
 export default function WeddingForm({ weddingId, initialValues, localMode = false, onSaved }: WeddingFormProps) {
   const [currentStep, setCurrentStep] = useState(0)
@@ -86,10 +102,27 @@ export default function WeddingForm({ weddingId, initialValues, localMode = fals
     primaryColor,
     secondaryColor,
     programs,
+    coverPhoto,
+    galleryPhotos,
   ] = useWatch({
     control,
-    name: ["weddingName", "groomName", "brideName", "date", "time", "slogan", "venueName", "city", "primaryColor", "secondaryColor", "programs"],
+    name: ["weddingName", "groomName", "brideName", "date", "time", "slogan", "venueName", "city", "primaryColor", "secondaryColor", "programs", "coverPhoto", "galleryPhotos"],
   })
+
+  const previewImages = useMemo(() => {
+    if (typeof URL === "undefined" || typeof URL.createObjectURL !== "function") return []
+    const urls = [
+      ...(coverPhoto ? [URL.createObjectURL(coverPhoto)] : []),
+      ...galleryPhotos.slice(0, 3).map((file) => URL.createObjectURL(file)),
+    ]
+    return urls
+  }, [coverPhoto, galleryPhotos])
+
+  useEffect(() => {
+    return () => {
+      previewImages.forEach((url) => URL.revokeObjectURL(url))
+    }
+  }, [previewImages])
 
   const renderCurrentSection = () => {
     switch (currentStep) {
@@ -164,6 +197,7 @@ export default function WeddingForm({ weddingId, initialValues, localMode = fals
             ? await updateWedding(weddingId, values)
             : await createWedding(values)
           savedId = saved.id
+          await uploadInvitationPhotos(savedId, values)
         } catch (error) {
           if (!(error instanceof WeddingClientError) || error.code !== "SUPABASE_NOT_CONFIGURED") throw error
           const saved = weddingId ? updateLocalWedding(weddingId, values) : createLocalWedding(values)
@@ -270,7 +304,12 @@ export default function WeddingForm({ weddingId, initialValues, localMode = fals
 
         <aside className="space-y-6 rounded-[1.75rem] border border-blue-100 bg-blue-50 p-6">
           <div className="relative overflow-hidden rounded-[1.5rem] bg-blue-950 p-6 text-white shadow-xl">
-            <RSVPSceneReplica compact className="opacity-75" />
+            <RSVPSceneReplica
+              compact
+              className="opacity-75"
+              images={previewImages}
+              couple={{ groom: groomName || "Marié", bride: brideName || "Mariée", date: weddingDate, location: [venueName, city].filter(Boolean).join(", ") }}
+            />
             <div className="absolute inset-0 bg-gradient-to-br from-blue-950/90 via-blue-900/70 to-amber-500/30" />
             <div className="relative z-10">
               <p className="text-sm uppercase tracking-[0.24em] text-amber-200">Aperçu invitation</p>

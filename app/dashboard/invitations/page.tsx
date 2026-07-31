@@ -9,7 +9,7 @@ import { useToast } from "@/components/ui/toast"
 import { listMessages, NotificationClientError, queueMessage, type MessageItem } from "@/lib/notifications/client"
 import { channelLabel, notificationTemplates, renderNotificationTemplate, type NotificationTemplateKey } from "@/lib/notifications/templates"
 import { readLocalMessages, saveLocalMessage } from "@/lib/notifications/local-store"
-import { readLocalWeddings } from "@/lib/weddings/local-store"
+import { resolveActiveWedding } from "@/lib/weddings/active"
 import type { MessageChannel } from "@/types/database.types"
 
 const channels: Array<{ value: MessageChannel; icon: typeof Mail }> = [
@@ -25,7 +25,7 @@ function makeId() {
 
 export default function InvitationsPage() {
   const { toast } = useToast()
-  const [weddingId, setWeddingId] = useState("demo-wedding")
+  const [weddingId, setWeddingId] = useState<string | null>(null)
   const [messages, setMessages] = useState<MessageItem[]>([])
   const [source, setSource] = useState<"api" | "local">("local")
   const [loading, setLoading] = useState(true)
@@ -36,8 +36,14 @@ export default function InvitationsPage() {
   const [body, setBody] = useState("")
   const [template, setTemplate] = useState<NotificationTemplateKey | "">("invitation")
 
-  const loadMessages = useCallback(async (target: string) => {
+  const loadMessages = useCallback(async (target: string, preferredSource: "api" | "local" = "api") => {
     setLoading(true)
+    if (preferredSource === "local") {
+      setMessages(readLocalMessages(target))
+      setSource("local")
+      setLoading(false)
+      return
+    }
     try {
       const response = await listMessages(target)
       setMessages(response.items.map((item) => ({ ...item, source: "api" })))
@@ -51,9 +57,16 @@ export default function InvitationsPage() {
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
-      const target = readLocalWeddings()[0]?.id ?? "demo-wedding"
-      setWeddingId(target)
-      void loadMessages(target)
+      void resolveActiveWedding().then((active) => {
+        const target = active.wedding?.id ?? null
+        setWeddingId(target)
+        setSource(active.source)
+        if (target) void loadMessages(target, active.source)
+        else {
+          setMessages([])
+          setLoading(false)
+        }
+      })
     }, 0)
     return () => window.clearTimeout(timer)
   }, [loadMessages])
@@ -76,6 +89,7 @@ export default function InvitationsPage() {
     setSubmitting(true)
     const now = new Date().toISOString()
     try {
+      if (!weddingId) throw new Error("Créez d’abord un mariage avant de préparer une invitation.")
       const created = source === "api"
         ? { ...(await queueMessage(weddingId, { channel, recipient, subject, body, template: template || undefined })), source: "api" as const }
         : saveLocalMessage(weddingId, { id: `local-${makeId()}`, wedding_id: weddingId, guest_id: null, channel, recipient, subject: subject || null, body, status: "queued", scheduled_at: null, sent_at: null, created_at: now, updated_at: now, source: "local" })

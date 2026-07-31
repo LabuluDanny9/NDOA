@@ -9,7 +9,7 @@ import { useToast } from "@/components/ui/toast"
 import { GalleryClientError, listPhotos, deletePhoto, updatePhoto, uploadPhoto, type GalleryPhoto } from "@/lib/gallery/client"
 import { compressImage } from "@/lib/gallery/image"
 import { deleteLocalPhoto, readLocalPhotos, saveLocalPhoto, updateLocalPhoto } from "@/lib/gallery/local-store"
-import { readLocalWeddings } from "@/lib/weddings/local-store"
+import { resolveActiveWedding } from "@/lib/weddings/active"
 
 function localId() { return typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2) }
 
@@ -24,15 +24,21 @@ function blobAsDataUrl(blob: Blob) {
 
 export default function GalleryPage() {
   const { toast } = useToast()
-  const [weddingId, setWeddingId] = useState("demo-wedding")
+  const [weddingId, setWeddingId] = useState<string | null>(null)
   const [photos, setPhotos] = useState<GalleryPhoto[]>([])
   const [source, setSource] = useState<"api" | "local">("local")
   const [loading, setLoading] = useState(true)
   const [uploading, setUploading] = useState(false)
   const [selected, setSelected] = useState<GalleryPhoto | null>(null)
 
-  const load = useCallback(async (target: string) => {
+  const load = useCallback(async (target: string, preferredSource: "api" | "local" = "api") => {
     setLoading(true)
+    if (preferredSource === "local") {
+      setPhotos(readLocalPhotos(target))
+      setSource("local")
+      setLoading(false)
+      return
+    }
     try {
       const response = await listPhotos(target)
       setPhotos(response.items)
@@ -46,9 +52,16 @@ export default function GalleryPage() {
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
-      const target = readLocalWeddings()[0]?.id ?? "demo-wedding"
-      setWeddingId(target)
-      void load(target)
+      void resolveActiveWedding().then((active) => {
+        const target = active.wedding?.id ?? null
+        setWeddingId(target)
+        setSource(active.source)
+        if (target) void load(target, active.source)
+        else {
+          setPhotos([])
+          setLoading(false)
+        }
+      })
     }, 0)
     return () => window.clearTimeout(timer)
   }, [load])
@@ -57,6 +70,10 @@ export default function GalleryPage() {
     const files = Array.from(event.target.files ?? [])
     event.target.value = ""
     if (files.length === 0) return
+    if (!weddingId) {
+      toast({ title: "Créez d’abord un mariage", description: "La galerie doit être liée à un mariage réel.", variant: "error" })
+      return
+    }
     setUploading(true)
     try {
       for (const [index, file] of files.entries()) {
@@ -80,6 +97,7 @@ export default function GalleryPage() {
     const targetPosition = photo.position + offset
     if (targetPosition < 0 || targetPosition >= photos.length) return
     try {
+      if (!weddingId) return
       if (source === "api") await updatePhoto(weddingId, photo.id, { position: targetPosition })
       else updateLocalPhoto(weddingId, photo.id, { position: targetPosition })
       await load(weddingId)
@@ -89,6 +107,7 @@ export default function GalleryPage() {
   async function remove(photo: GalleryPhoto) {
     if (!window.confirm(`Supprimer ${photo.original_filename ?? "cette photo"} ?`)) return
     try {
+      if (!weddingId) return
       if (source === "api") await deletePhoto(weddingId, photo.id)
       else deleteLocalPhoto(weddingId, photo.id)
       setPhotos((current) => current.filter((item) => item.id !== photo.id))

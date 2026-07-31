@@ -5,6 +5,7 @@ import { motion } from "framer-motion"
 import { Check, Loader2 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import { Textarea } from "@/components/ui/textarea"
 
 type RsvpResponse = "accepted" | "declined" | "maybe"
 
@@ -29,6 +30,7 @@ export default function RSVPForm({ slug = "demo" }: { slug?: string }) {
       lastName: String(form.get("lastName") ?? ""),
       phone: String(form.get("phone") ?? ""),
       response: response as RsvpResponse,
+      comments: String(form.get("comments") ?? "").trim() || null,
     }
 
     try {
@@ -72,7 +74,7 @@ export default function RSVPForm({ slug = "demo" }: { slug?: string }) {
         <div>
           <p className="text-sm uppercase tracking-[0.35em] text-blue-700">RSVP</p>
           <h2 className="mt-3 text-3xl font-semibold text-slate-950">Confirmer l’invitation</h2>
-          <p className="mt-2 text-sm text-slate-600">Seulement prénom, nom et téléphone — rien de plus.</p>
+          <p className="mt-2 text-sm text-slate-600">Prénom, nom, téléphone et un mot optionnel pour les mariés.</p>
         </div>
         <div className="rounded-full bg-amber-100 px-4 py-2 text-sm font-medium text-amber-700">
           Sécurisé
@@ -95,6 +97,13 @@ export default function RSVPForm({ slug = "demo" }: { slug?: string }) {
             <Input aria-label="Nom" name="lastName" placeholder="Nom" required minLength={2} />
           </div>
           <Input aria-label="Numéro de téléphone" name="phone" placeholder="+243 ..." type="tel" required minLength={6} />
+          <Textarea
+            aria-label="Mot pour les mariés"
+            name="comments"
+            placeholder="Écrivez un petit mot pour les mariés…"
+            maxLength={5000}
+            className="rounded-xl border-blue-100 bg-white focus-visible:border-blue-400 focus-visible:ring-blue-100"
+          />
           <select
             aria-label="Réponse RSVP"
             name="status"
