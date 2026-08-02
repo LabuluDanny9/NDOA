@@ -3,20 +3,67 @@
 import type { ComponentType } from "react"
 import { useEffect, useState } from "react"
 import { Bell, Database, Globe2, LockKeyhole, Settings, ShieldCheck } from "lucide-react"
+import { useToast } from "@/components/ui/toast"
 
 type HealthPayload = {
   status: string
   checks?: { app?: boolean; supabaseConfigured?: boolean; supabaseDatabase?: boolean }
 }
 
-const defaultSettings = [
-  { id: "sms", label: "Préparer les relances SMS/WhatsApp", description: "Garde les numéros prêts pour un futur fournisseur d’envoi.", enabled: true, icon: Bell },
-  { id: "privacy", label: "Masquer les données sensibles", description: "Les invités publics ne voient jamais les contacts des autres invités.", enabled: true, icon: LockKeyhole },
-  { id: "rsvp", label: "RSVP simplifié", description: "Confirmation avec prénom, nom, téléphone et réponse uniquement.", enabled: true, icon: ShieldCheck },
+type SettingItem = {
+  id: string
+  label: string
+  description: string
+  enabled: boolean
+  icon: ComponentType<{ className?: string }>
+}
+
+const SETTINGS_STORAGE_KEY = "ndoa:dashboard:settings:v1"
+
+const defaultSettings: SettingItem[] = [
+  {
+    id: "sms",
+    label: "Preparar les relances SMS/WhatsApp",
+    description: "Garde les numeros prets pour un futur fournisseur d'envoi.",
+    enabled: true,
+    icon: Bell,
+  },
+  {
+    id: "privacy",
+    label: "Masquer les donnees sensibles",
+    description: "Les invites publics ne voient jamais les contacts des autres invites.",
+    enabled: true,
+    icon: LockKeyhole,
+  },
+  {
+    id: "rsvp",
+    label: "RSVP simplifie",
+    description: "Confirmation avec prenom, nom, telephone et reponse uniquement.",
+    enabled: true,
+    icon: ShieldCheck,
+  },
 ]
 
+function readStoredSettings() {
+  if (typeof window === "undefined") return null
+  try {
+    const parsed = JSON.parse(window.localStorage.getItem(SETTINGS_STORAGE_KEY) ?? "null") as null | Record<string, boolean>
+    return parsed && typeof parsed === "object" ? parsed : null
+  } catch {
+    return null
+  }
+}
+
+function mergeSettings(stored: null | Record<string, boolean>): SettingItem[] {
+  return defaultSettings.map((item) => ({
+    ...item,
+    enabled: typeof stored?.[item.id] === "boolean" ? stored[item.id] : item.enabled,
+  }))
+}
+
 export default function SettingsPage() {
-  const [settings, setSettings] = useState(defaultSettings)
+  const { toast } = useToast()
+  const [settings, setSettings] = useState<SettingItem[]>(() => mergeSettings(readStoredSettings()))
   const [health, setHealth] = useState<HealthPayload | null>(null)
 
   useEffect(() => {
@@ -26,27 +73,58 @@ export default function SettingsPage() {
       .catch(() => setHealth({ status: "degraded" }))
   }, [])
 
+  function toggleSetting(settingId: string) {
+    setSettings((current) => {
+      const next = current.map((setting) =>
+        setting.id === settingId ? { ...setting, enabled: !setting.enabled } : setting,
+      )
+      if (typeof window !== "undefined") {
+        const serialized = Object.fromEntries(next.map((setting) => [setting.id, setting.enabled]))
+        window.localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(serialized))
+      }
+      const changed = next.find((setting) => setting.id === settingId)
+      if (changed) {
+        toast({
+          title: changed.enabled ? "Preference activee" : "Preference desactivee",
+          description: changed.label,
+          variant: "success",
+        })
+      }
+      return next
+    })
+  }
+
   return (
     <main className="space-y-8">
       <section className="rounded-[2rem] bg-gradient-to-br from-blue-800 via-blue-700 to-blue-600 p-8 text-white shadow-xl shadow-blue-950/20">
         <div className="flex items-center gap-3">
           <Settings className="size-6 text-amber-200" />
-          <p className="text-sm uppercase tracking-[0.3em] text-amber-200">Paramètres</p>
+          <p className="text-sm uppercase tracking-[0.3em] text-amber-200">Parametres</p>
         </div>
-        <h1 className="mt-3 text-3xl font-semibold">Configuration de l’application</h1>
+        <h1 className="mt-3 text-3xl font-semibold">Configuration application</h1>
         <p className="mt-3 max-w-3xl text-sm leading-6 text-blue-50">
-          État de production, préférences de sécurité et comportement du RSVP.
+          Etat de production, preferences de securite et comportement du RSVP.
         </p>
       </section>
 
       <section className="grid gap-4 md:grid-cols-3">
-        <StatusCard icon={Globe2} label="Application" value={health?.checks?.app ? "En ligne" : "À vérifier"} />
-        <StatusCard icon={Database} label="Supabase" value={health?.checks?.supabaseConfigured ? "Connecté" : "Non configuré"} />
-        <StatusCard icon={ShieldCheck} label="Base de données" value={health?.checks?.supabaseDatabase ? "Prête" : "À vérifier"} />
+        <StatusCard icon={Globe2} label="Application" value={health?.checks?.app ? "En ligne" : "A verifier"} />
+        <StatusCard icon={Database} label="Supabase" value={health?.checks?.supabaseConfigured ? "Connecte" : "Non configure"} />
+        <StatusCard icon={ShieldCheck} label="Base de donnees" value={health?.checks?.supabaseDatabase ? "Prete" : "A verifier"} />
       </section>
 
       <section className="rounded-[2rem] border border-blue-100 bg-white p-6 shadow-sm">
-        <h2 className="text-xl font-semibold text-slate-950">Préférences actives</h2>
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <h2 className="text-xl font-semibold text-slate-950">Preferences actives</h2>
+            <p className="mt-2 text-sm text-slate-600">
+              Ces reglages sont maintenant conserves dans ce navigateur et survivent au rechargement.
+            </p>
+          </div>
+          <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700">
+            Sauvegarde locale
+          </span>
+        </div>
         <div className="mt-6 grid gap-4">
           {settings.map((item) => {
             const Icon = item.icon
@@ -64,7 +142,7 @@ export default function SettingsPage() {
                 <input
                   type="checkbox"
                   checked={item.enabled}
-                  onChange={() => setSettings((current) => current.map((setting) => setting.id === item.id ? { ...setting, enabled: !setting.enabled } : setting))}
+                  onChange={() => toggleSetting(item.id)}
                   className="size-5 accent-blue-700"
                 />
               </label>
