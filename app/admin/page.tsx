@@ -1,7 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { Activity, Camera, CheckCircle2, QrCode, Search, Settings2, ShieldCheck, UserCog } from "lucide-react"
+import { Activity, Camera, CheckCircle2, QrCode, Search, Settings2, ShieldCheck, Sparkles, UserCog } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/components/ui/toast"
@@ -26,7 +26,7 @@ function normalizeScannedCode(value: string) {
     const url = new URL(trimmed)
     const queryCode = url.searchParams.get("code")
     if (queryCode) return queryCode.trim().toUpperCase()
-  } catch { /* not a URL */ }
+  } catch {}
   return trimmed.toUpperCase()
 }
 
@@ -52,10 +52,7 @@ export default function AdminPage() {
   const detectorRef = useRef<{ detect: (source: ImageBitmapSource) => Promise<BarcodeDetectorResult[]> } | null>(null)
   const handlingScanRef = useRef(false)
 
-  const checkedInGuests = useMemo(
-    () => guests.filter((guest) => Boolean(guest.checkedInAt)),
-    [guests],
-  )
+  const checkedInGuests = useMemo(() => guests.filter((guest) => Boolean(guest.checkedInAt)), [guests])
 
   const stopScanner = useCallback(() => {
     if (intervalRef.current !== null) {
@@ -215,16 +212,19 @@ export default function AdminPage() {
 
   return (
     <main className="mx-auto max-w-7xl space-y-6">
-      <section className="rounded-[2rem] bg-gradient-to-br from-blue-950 via-blue-900 to-slate-950 p-6 text-white shadow-sm sm:p-8">
+      <section className="hero-glow overflow-hidden rounded-[2rem] border border-white/20 bg-[linear-gradient(135deg,rgba(2,6,23,0.98),rgba(15,23,42,0.95),rgba(30,64,175,0.88))] p-6 text-white shadow-[0_24px_80px_rgba(2,6,23,0.35)] sm:p-8">
         <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <p className="text-sm uppercase tracking-[0.24em] text-amber-300">Controle plateforme</p>
+            <p className="inline-flex items-center gap-2 text-sm uppercase tracking-[0.24em] text-amber-300">
+              <Sparkles className="size-4" />
+              Controle plateforme
+            </p>
             <h1 className="mt-3 text-3xl font-semibold">Espace administrateur</h1>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-blue-100">
               Gere les comptes, surveille l&apos;activite et scanne les QR codes des invitations a l&apos;arrivee des invites.
             </p>
           </div>
-          <div className="rounded-2xl border border-white/15 bg-white/10 px-4 py-3 text-sm">
+          <div className="rounded-2xl border border-white/15 bg-white/10 px-4 py-3 text-sm backdrop-blur-md">
             <span className="flex items-center gap-2">
               <CheckCircle2 className="size-4 text-emerald-300" />
               {source === "api" ? "Donnees synchronisees" : "Demonstration locale"}
@@ -234,25 +234,21 @@ export default function AdminPage() {
       </section>
 
       <div className="grid gap-6 md:grid-cols-4">
-        <div className="rounded-2xl bg-white p-5 shadow-sm"><UserCog className="size-5 text-amber-600" /><p className="mt-4 text-3xl font-semibold">{users.length}</p><p className="text-sm text-slate-500">Comptes visibles</p></div>
-        <div className="rounded-2xl bg-white p-5 shadow-sm"><Activity className="size-5 text-sky-600" /><p className="mt-4 text-3xl font-semibold">{activity.length}</p><p className="text-sm text-slate-500">Evenements recents</p></div>
-        <div className="rounded-2xl bg-white p-5 shadow-sm"><Settings2 className="size-5 text-violet-600" /><p className="mt-4 text-3xl font-semibold">{configured ? "Actif" : "Demo"}</p><p className="text-sm text-slate-500">Configuration Supabase</p></div>
-        <div className="rounded-2xl bg-white p-5 shadow-sm"><QrCode className="size-5 text-blue-700" /><p className="mt-4 text-3xl font-semibold">{checkedInGuests.length}</p><p className="text-sm text-slate-500">Invites deja scannes</p></div>
+        <div className="surface-card p-5"><UserCog className="size-5 text-amber-600" /><p className="mt-4 text-3xl font-semibold">{users.length}</p><p className="text-sm text-slate-500">Comptes visibles</p></div>
+        <div className="surface-card p-5"><Activity className="size-5 text-sky-600" /><p className="mt-4 text-3xl font-semibold">{activity.length}</p><p className="text-sm text-slate-500">Evenements recents</p></div>
+        <div className="surface-card p-5"><Settings2 className="size-5 text-violet-600" /><p className="mt-4 text-3xl font-semibold">{configured ? "Actif" : "Demo"}</p><p className="text-sm text-slate-500">Configuration Supabase</p></div>
+        <div className="surface-card p-5"><QrCode className="size-5 text-blue-700" /><p className="mt-4 text-3xl font-semibold">{checkedInGuests.length}</p><p className="text-sm text-slate-500">Invites deja scannes</p></div>
       </div>
 
       <section className="grid gap-6 xl:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
-        <div className="rounded-[2rem] bg-white p-6 shadow-sm sm:p-8">
+        <div className="surface-card p-6 sm:p-8">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-sm uppercase tracking-[0.24em] text-blue-700">Controle d&apos;acces</p>
               <h2 className="mt-2 text-2xl font-semibold text-slate-950">Scanner QR des invitations</h2>
-              <p className="mt-2 text-sm leading-6 text-slate-600">
-                Mariage actif : <span className="font-medium text-slate-900">{weddingName}</span>
-              </p>
+              <p className="mt-2 text-sm leading-6 text-slate-600">Mariage actif : <span className="font-medium text-slate-900">{weddingName}</span></p>
             </div>
-            <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-800">
-              Source invites : {guestSource === "api" ? "API" : "Locale"}
-            </span>
+            <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-800">Source invites : {guestSource === "api" ? "API" : "Locale"}</span>
           </div>
 
           <div className="mt-6 overflow-hidden rounded-[1.75rem] border border-blue-100 bg-slate-950">
@@ -261,41 +257,20 @@ export default function AdminPage() {
 
           <div className="mt-4 rounded-2xl bg-blue-50 p-4 text-sm text-slate-700">
             <p className="font-medium text-slate-950">{cameraMessage}</p>
-            <p className="mt-2 text-slate-600">
-              Si la camera n&apos;est pas disponible, vous pouvez entrer le code invite manuellement ci-dessous.
-            </p>
+            <p className="mt-2 text-slate-600">Si la camera n&apos;est pas disponible, vous pouvez entrer le code invite manuellement ci-dessous.</p>
           </div>
 
           <div className="mt-5 flex flex-col gap-3 sm:flex-row">
             {isScanning ? (
-              <Button type="button" variant="outline" onClick={stopScanner}>
-                Arreter le scan
-              </Button>
+              <Button type="button" variant="outline" onClick={stopScanner}>Arreter le scan</Button>
             ) : (
-              <Button type="button" onClick={() => void startScanner()}>
-                <Camera className="size-4" />
-                Demarrer la camera
-              </Button>
+              <Button type="button" onClick={() => void startScanner()}><Camera className="size-4" /> Demarrer la camera</Button>
             )}
           </div>
 
-          <form
-            className="mt-6 grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto]"
-            onSubmit={(event) => {
-              event.preventDefault()
-              void handleGuestCheckIn(scanInput)
-            }}
-          >
-            <Input
-              value={scanInput}
-              onChange={(event) => setScanInput(event.target.value)}
-              placeholder="Ex: ABCD1234 ou collez le lien complet de l&apos;invitation"
-              maxLength={500}
-            />
-            <Button type="submit" disabled={scanBusy || !scanInput.trim()}>
-              <Search className="size-4" />
-              Valider le code
-            </Button>
+          <form className="mt-6 grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto]" onSubmit={(event) => { event.preventDefault(); void handleGuestCheckIn(scanInput) }}>
+            <Input value={scanInput} onChange={(event) => setScanInput(event.target.value)} placeholder="Ex: ABCD1234 ou collez le lien complet de l&apos;invitation" maxLength={500} />
+            <Button type="submit" disabled={scanBusy || !scanInput.trim()}><Search className="size-4" /> Valider le code</Button>
           </form>
 
           {lastScan ? (
@@ -307,7 +282,7 @@ export default function AdminPage() {
           ) : null}
         </div>
 
-        <div className="rounded-[2rem] bg-white p-6 shadow-sm sm:p-8">
+        <div className="surface-card p-6 sm:p-8">
           <div className="flex items-center justify-between gap-3">
             <div>
               <h2 className="text-xl font-semibold">Etat des entrees</h2>
@@ -320,7 +295,7 @@ export default function AdminPage() {
           ) : (
             <div className="mt-5 space-y-3">
               {guests.slice().sort((a, b) => Number(Boolean(b.checkedInAt)) - Number(Boolean(a.checkedInAt))).map((guest) => (
-                <div key={guest.id} className="rounded-2xl border border-slate-100 p-4">
+                <div key={guest.id} className="rounded-2xl border border-slate-100 bg-white/80 p-4">
                   <div className="flex items-center justify-between gap-3">
                     <div>
                       <p className="font-medium text-slate-900">{guest.firstName} {guest.lastName}</p>
@@ -330,9 +305,7 @@ export default function AdminPage() {
                       {guest.checkedInAt ? "Scanne" : "En attente"}
                     </span>
                   </div>
-                  <p className="mt-3 text-xs text-slate-500">
-                    {guest.checkedInAt ? `Enregistre le ${new Date(guest.checkedInAt).toLocaleString("fr-FR")}` : "Pas encore passe au point de controle."}
-                  </p>
+                  <p className="mt-3 text-xs text-slate-500">{guest.checkedInAt ? `Enregistre le ${new Date(guest.checkedInAt).toLocaleString("fr-FR")}` : "Pas encore passe au point de controle."}</p>
                 </div>
               ))}
             </div>
@@ -340,14 +313,14 @@ export default function AdminPage() {
         </div>
       </section>
 
-      <section className="rounded-[2rem] bg-white p-6 shadow-sm sm:p-8">
+      <section className="surface-card p-6 sm:p-8">
         <div className="flex items-center gap-3"><ShieldCheck className="size-5 text-amber-600" /><h2 className="text-xl font-semibold">Utilisateurs et permissions</h2></div>
         {loading ? <p className="mt-6 text-sm text-slate-500">Chargement...</p> : <div className="mt-5 overflow-x-auto"><table className="w-full min-w-[700px] text-left text-sm"><thead><tr className="border-b border-slate-100 text-xs uppercase tracking-wide text-slate-400"><th className="px-3 py-3">Compte</th><th className="px-3 py-3">Role</th><th className="px-3 py-3">Statut</th><th className="px-3 py-3">Derniere connexion</th></tr></thead><tbody>{users.map((user) => <tr key={user.id} className="border-b border-slate-50"><td className="px-3 py-4"><p className="font-medium text-slate-900">{user.display_name}</p><p className="text-xs text-slate-500">{user.email ?? "Sans email"}</p></td><td className="px-3 py-4"><select aria-label={`Role de ${user.display_name}`} value={user.role} onChange={(event) => void updateUser(user, "role", event.target.value as AppRole)} className="rounded-lg border border-slate-200 bg-white px-2 py-2 text-sm"><option value="admin">Admin</option><option value="organizer">Organisateur</option><option value="guest">Invite</option></select></td><td className="px-3 py-4"><select aria-label={`Statut de ${user.display_name}`} value={user.status} onChange={(event) => void updateUser(user, "status", event.target.value as AccountStatus)} className="rounded-lg border border-slate-200 bg-white px-2 py-2 text-sm"><option value="active">Actif</option><option value="suspended">Suspendu</option><option value="disabled">Desactive</option></select></td><td className="px-3 py-4 text-slate-500">{user.last_sign_in_at ? new Date(user.last_sign_in_at).toLocaleString("fr-FR") : "Jamais"}</td></tr>)}</tbody></table></div>}
       </section>
 
-      <section className="rounded-[2rem] bg-white p-6 shadow-sm sm:p-8">
+      <section className="surface-card p-6 sm:p-8">
         <h2 className="text-xl font-semibold">Journal d&apos;activite</h2>
-        {activity.length === 0 ? <p className="mt-4 rounded-2xl bg-slate-50 p-5 text-sm text-slate-500">Aucun evenement disponible dans cet environnement.</p> : <div className="mt-5 space-y-3">{activity.map((item) => <div key={item.id} className="flex items-center justify-between gap-4 rounded-xl border border-slate-100 p-4"><p className="text-sm text-slate-700">{item.action} · {item.entity_type}</p><time className="text-xs text-slate-400">{new Date(item.occurred_at).toLocaleString("fr-FR")}</time></div>)}</div>}
+        {activity.length === 0 ? <p className="mt-4 rounded-2xl bg-slate-50 p-5 text-sm text-slate-500">Aucun evenement disponible dans cet environnement.</p> : <div className="mt-5 space-y-3">{activity.map((item) => <div key={item.id} className="flex items-center justify-between gap-4 rounded-xl border border-slate-100 bg-white/80 p-4"><p className="text-sm text-slate-700">{item.action} · {item.entity_type}</p><time className="text-xs text-slate-400">{new Date(item.occurred_at).toLocaleString("fr-FR")}</time></div>)}</div>}
         <Button variant="outline" className="mt-5" onClick={() => toast({ title: "Journal protege", description: "Les evenements sont filtres par le role administrateur cote serveur.", variant: "info" })}>A propos des permissions</Button>
       </section>
     </main>

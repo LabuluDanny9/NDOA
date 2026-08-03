@@ -1,16 +1,16 @@
 "use client"
 
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react"
-import { Clock3, Mail, MessageCircle, Send, Smartphone } from "lucide-react"
+import { Clock3, Mail, MessageCircle, Send, Smartphone, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/components/ui/toast"
-import { listGuests, fromGuestApiRow, GuestClientError } from "@/lib/guests/client"
+import { fromGuestApiRow, GuestClientError, listGuests } from "@/lib/guests/client"
 import { readLocalGuests } from "@/lib/guests/local-store"
 import { listMessages, NotificationClientError, queueMessage, type MessageItem } from "@/lib/notifications/client"
-import { channelLabel, notificationTemplates, renderNotificationTemplate, type NotificationTemplateKey } from "@/lib/notifications/templates"
 import { readLocalMessages, saveLocalMessage } from "@/lib/notifications/local-store"
+import { channelLabel, notificationTemplates, renderNotificationTemplate, type NotificationTemplateKey } from "@/lib/notifications/templates"
 import { resolveActiveWedding } from "@/lib/weddings/active"
 import type { Guest } from "@/components/guests/types"
 import type { MessageChannel } from "@/types/database.types"
@@ -195,11 +195,7 @@ export default function InvitationsPage() {
 
       if (channel === "whatsapp" && whatsappHref) {
         window.open(whatsappHref, "_blank", "noopener,noreferrer")
-        toast({
-          title: "WhatsApp ouvert",
-          description: "La conversation de l'invite a ete ouverte avec son invitation et son code QR.",
-          variant: "success",
-        })
+        toast({ title: "WhatsApp ouvert", description: "La conversation de l'invite a ete ouverte avec son invitation et son code QR.", variant: "success" })
       } else {
         toast({ title: "Message mis en file", description: `Canal : ${channelLabel(channel)}.`, variant: "success" })
       }
@@ -212,18 +208,19 @@ export default function InvitationsPage() {
 
   return (
     <main className="mx-auto max-w-7xl space-y-6">
-      <section className="rounded-[2rem] bg-white p-6 shadow-sm sm:p-8">
-        <p className="text-sm uppercase tracking-[0.24em] text-amber-700">Communication</p>
-        <h1 className="mt-3 text-3xl font-semibold text-slate-950">Invitations WhatsApp et QR</h1>
-        <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
-          Selectionnez un invite, ouvrez directement sa conversation WhatsApp et envoyez-lui son invitation
-          personnalisee. Le lien contient son code, et le QR apparait ensuite sur sa page d&apos;invitation pour le
-          scan le jour de l&apos;evenement.
+      <section className="hero-glow overflow-hidden rounded-[2rem] border border-white/50 bg-[linear-gradient(135deg,rgba(15,23,42,0.96),rgba(37,99,235,0.9),rgba(245,158,11,0.78))] p-6 text-white shadow-[0_24px_80px_rgba(15,23,42,0.18)] sm:p-8">
+        <p className="inline-flex items-center gap-2 text-sm uppercase tracking-[0.24em] text-amber-200">
+          <Sparkles className="size-4" />
+          Communication
+        </p>
+        <h1 className="mt-3 text-3xl font-semibold tracking-[-0.03em] text-white">Invitations WhatsApp et QR</h1>
+        <p className="mt-3 max-w-3xl text-sm leading-6 text-blue-50/92">
+          Selectionnez un invite, ouvrez directement sa conversation WhatsApp et envoyez-lui son invitation personnalisee. Le lien contient son code, et le QR apparait ensuite sur sa page d&apos;invitation pour le scan le jour de l&apos;evenement.
         </p>
       </section>
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
-        <form onSubmit={handleSubmit} className="space-y-5 rounded-[2rem] bg-white p-6 shadow-sm sm:p-8">
+        <form onSubmit={handleSubmit} className="surface-card space-y-5 p-6 sm:p-8">
           <div>
             <label className="text-sm font-medium" htmlFor="notification-guest">Invite</label>
             <select
@@ -236,7 +233,7 @@ export default function InvitationsPage() {
                 if (nextGuest?.phone) setRecipient(nextGuest.phone)
                 if (template) applyTemplate(template, nextGuest)
               }}
-              className="mt-2 h-11 w-full rounded-lg border border-input bg-white px-3 text-sm"
+              className="mt-2 h-11 w-full rounded-xl border border-input bg-white px-3 text-sm"
             >
               <option value="">Choisir un invite</option>
               {guests.map((guest) => (
@@ -253,7 +250,7 @@ export default function InvitationsPage() {
               id="notification-template"
               value={template}
               onChange={(event) => applyTemplate(event.target.value as NotificationTemplateKey | "")}
-              className="mt-2 h-11 w-full rounded-lg border border-input bg-white px-3 text-sm"
+              className="mt-2 h-11 w-full rounded-xl border border-input bg-white px-3 text-sm"
             >
               <option value="">Message personnalise</option>
               {Object.entries(notificationTemplates).map(([key, value]) => (
@@ -270,7 +267,7 @@ export default function InvitationsPage() {
                   key={value}
                   type="button"
                   onClick={() => setChannel(value)}
-                  className={`flex items-center gap-2 rounded-xl border px-3 py-2 text-left text-sm ${channel === value ? "border-amber-500 bg-amber-50 text-amber-800" : "border-slate-200 text-slate-600"}`}
+                  className={`flex items-center gap-2 rounded-2xl border px-3 py-3 text-left text-sm transition ${channel === value ? "border-amber-400 bg-amber-50 text-amber-800 shadow-sm" : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"}`}
                   aria-pressed={channel === value}
                 >
                   <Icon className="size-4" />
@@ -282,13 +279,7 @@ export default function InvitationsPage() {
 
           <div>
             <label className="text-sm font-medium" htmlFor="notification-recipient">Destinataire</label>
-            <Input
-              id="notification-recipient"
-              value={recipient}
-              onChange={(event) => setRecipient(event.target.value)}
-              placeholder={channel === "email" ? "invite@example.com" : "+243..."}
-              maxLength={254}
-            />
+            <Input id="notification-recipient" value={recipient} onChange={(event) => setRecipient(event.target.value)} placeholder={channel === "email" ? "invite@example.com" : "+243..."} maxLength={254} />
           </div>
 
           <div>
@@ -305,43 +296,30 @@ export default function InvitationsPage() {
             <p className="font-medium text-slate-950">Lien qui sera envoye</p>
             <p className="mt-2 break-all text-blue-800">{invitationUrl}</p>
             <p className="mt-3 text-slate-600">
-              {selectedGuest?.inviteCode
-                ? `Code/QR invite : ${selectedGuest.inviteCode}`
-                : "Selectionnez un invite pour generer un code personnalise."}
+              {selectedGuest?.inviteCode ? `Code/QR invite : ${selectedGuest.inviteCode}` : "Selectionnez un invite pour generer un code personnalise."}
             </p>
           </div>
 
           <div className="flex flex-col gap-3 sm:flex-row">
             <Button type="submit" disabled={submitting} className="flex-1">
               <Send className="size-4" />
-              {channel === "whatsapp"
-                ? (submitting ? "Ouverture..." : "Envoyer sur WhatsApp")
-                : (submitting ? "Mise en file..." : "Mettre en file d'envoi")}
+              {channel === "whatsapp" ? (submitting ? "Ouverture..." : "Envoyer sur WhatsApp") : (submitting ? "Mise en file..." : "Mettre en file d'envoi")}
             </Button>
             {channel === "whatsapp" ? (
-              <Button
-                type="button"
-                variant="outline"
-                disabled={!whatsappHref}
-                onClick={() => {
-                  if (whatsappHref) window.open(whatsappHref, "_blank", "noopener,noreferrer")
-                }}
-              >
+              <Button type="button" variant="outline" disabled={!whatsappHref} onClick={() => { if (whatsappHref) window.open(whatsappHref, "_blank", "noopener,noreferrer") }}>
                 Ouvrir WhatsApp
               </Button>
             ) : null}
           </div>
         </form>
 
-        <section className="rounded-[2rem] bg-white p-6 shadow-sm sm:p-8">
+        <section className="surface-card p-6 sm:p-8">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground">Historique</p>
               <h2 className="mt-2 text-xl font-semibold">Messages prepares</h2>
             </div>
-            <span className="rounded-full bg-slate-100 px-3 py-1 text-xs text-slate-600">
-              {source === "api" ? "Synchronise" : "Demo locale"}
-            </span>
+            <span className="rounded-full bg-slate-100 px-3 py-1 text-xs text-slate-600">{source === "api" ? "Synchronise" : "Demo locale"}</span>
           </div>
           {loading ? (
             <p className="mt-8 text-sm text-slate-500">Chargement...</p>
@@ -350,7 +328,7 @@ export default function InvitationsPage() {
           ) : (
             <div className="mt-5 space-y-3">
               {messages.map((message) => (
-                <article key={message.id} className="rounded-2xl border border-slate-100 p-4">
+                <article key={message.id} className="rounded-2xl border border-slate-100 bg-white/80 p-4">
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className="font-medium text-slate-900">{message.subject || "Sans objet"}</p>

@@ -2,12 +2,12 @@
 
 import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
-import { Armchair, Plus, UsersRound } from "lucide-react"
+import { Armchair, Plus, Sparkles, UsersRound } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { listGuests, fromGuestApiRow } from "@/lib/guests/client"
+import { fromGuestApiRow, listGuests } from "@/lib/guests/client"
 import { readLocalGuests } from "@/lib/guests/local-store"
-import { listWeddings, fromWeddingApiRow, type WeddingSummary } from "@/lib/weddings/client"
+import { fromWeddingApiRow, listWeddings, type WeddingSummary } from "@/lib/weddings/client"
 import { readLocalWeddings } from "@/lib/weddings/local-store"
 import type { Guest } from "@/components/guests/types"
 
@@ -33,7 +33,7 @@ async function createRemoteTable(weddingId: string, input: Pick<TableRow, "name"
     body: JSON.stringify({ ...input, shape: "round", position: 0 }),
   })
   const body = await response.json() as { data?: TableRow; error?: { message?: string } }
-  if (!response.ok || !body.data) throw new Error(body.error?.message ?? "Création de table impossible.")
+  if (!response.ok || !body.data) throw new Error(body.error?.message ?? "Creation de table impossible.")
   return body.data
 }
 
@@ -110,81 +110,77 @@ export default function TablesPage() {
 
   return (
     <main className="space-y-8">
-      <section className="rounded-[2rem] bg-white p-8 shadow-sm ring-1 ring-blue-100">
-        <p className="text-sm uppercase tracking-[0.3em] text-blue-700">Plan de tables</p>
-        <h1 className="mt-3 text-3xl font-semibold text-slate-950">Organiser les places réelles</h1>
-        <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-600">
-          Les tables affichées sont celles que vous créez pour {wedding?.name ?? "votre mariage"}. Aucune table fictive n’est ajoutée automatiquement.
+      <section className="hero-glow overflow-hidden rounded-[2rem] border border-white/50 bg-[linear-gradient(135deg,rgba(15,23,42,0.96),rgba(37,99,235,0.9),rgba(245,158,11,0.78))] p-8 text-white shadow-[0_24px_80px_rgba(15,23,42,0.18)]">
+        <p className="inline-flex items-center gap-2 text-sm uppercase tracking-[0.3em] text-amber-200"><Sparkles className="size-4" /> Plan de tables</p>
+        <h1 className="mt-3 text-3xl font-semibold text-white">Organiser les places reelles</h1>
+        <p className="mt-3 max-w-3xl text-sm leading-6 text-blue-50">
+          Les tables affichees sont celles que vous creez pour {wedding?.name ?? "votre mariage"}. Aucune table fictive n&apos;est ajoutee automatiquement.
         </p>
         <div className="mt-6 grid gap-4 sm:grid-cols-4">
           <SummaryCard label="Mariage" value={wedding?.name ?? "Aucun mariage"} />
-          <SummaryCard label="Invités réels" value={guests.length} />
+          <SummaryCard label="Invites reels" value={guests.length} />
           <SummaryCard label="Tables" value={tables.length} />
           <SummaryCard label="Places restantes" value={Math.max(totalSeats - guests.length, 0)} />
         </div>
       </section>
 
       {!wedding ? (
-        <section className="rounded-[2rem] border border-dashed border-blue-200 bg-white p-8 text-center shadow-sm">
-          <h2 className="text-xl font-semibold text-slate-950">Créez d’abord un mariage</h2>
+        <section className="surface-card border border-dashed border-blue-200 p-8 text-center">
+          <h2 className="text-xl font-semibold text-slate-950">Creez d&apos;abord un mariage</h2>
           <p className="mx-auto mt-3 max-w-2xl text-sm text-slate-600">
-            Le plan de tables doit être lié à un mariage réel pour que les capacités et les invités correspondent.
+            Le plan de tables doit etre lie a un mariage reel pour que les capacites et les invites correspondent.
           </p>
-          <Button asChild className="mt-6 bg-blue-700 text-white hover:bg-blue-800">
-            <Link href="/dashboard/create-wedding">Créer un mariage</Link>
+          <Button asChild className="mt-6">
+            <Link href="/dashboard/create-wedding">Creer un mariage</Link>
           </Button>
         </section>
       ) : (
         <section className="grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
-          <form onSubmit={addTable} className="rounded-[2rem] border border-blue-100 bg-white p-6 shadow-sm">
+          <form onSubmit={addTable} className="surface-card p-6">
             <div className="flex items-center gap-3">
               <Armchair className="size-5 text-amber-500" />
               <h2 className="text-xl font-semibold text-slate-950">Nouvelle table</h2>
             </div>
             <div className="mt-6 grid gap-4">
               <Input aria-label="Nom de la table" value={name} onChange={(event) => setName(event.target.value)} placeholder="Table Famille" required minLength={2} />
-              <Input aria-label="Capacité" value={capacity} onChange={(event) => setCapacity(event.target.value)} type="number" min={1} max={100} />
+              <Input aria-label="Capacite" value={capacity} onChange={(event) => setCapacity(event.target.value)} type="number" min={1} max={100} />
               <Input aria-label="Emplacement" value={location} onChange={(event) => setLocation(event.target.value)} placeholder="Salle principale" />
-              <Button type="submit" disabled={saving} className="bg-blue-700 text-white hover:bg-blue-800">
+              <Button type="submit" disabled={saving}>
                 <Plus className="size-4" />
                 Ajouter la table
               </Button>
             </div>
-            <p className="mt-4 text-xs text-slate-500">
-              Source : {source === "api" ? "Supabase" : "données locales réellement enregistrées"}
-            </p>
+            <p className="mt-4 text-xs text-slate-500">Source : {source === "api" ? "Supabase" : "donnees locales reellement enregistrees"}</p>
           </form>
 
           <div className="grid gap-4 md:grid-cols-2">
             {tables.length ? tables.map((table) => (
-              <article key={table.id} className="rounded-[2rem] border border-blue-100 bg-white p-6 shadow-sm">
+              <article key={table.id} className="surface-card p-6">
                 <div className="flex items-start justify-between gap-4">
                   <div>
                     <h3 className="text-xl font-semibold text-slate-950">{table.name}</h3>
-                    <p className="mt-1 text-sm text-slate-500">{table.location ?? "Emplacement à préciser"}</p>
+                    <p className="mt-1 text-sm text-slate-500">{table.location ?? "Emplacement a preciser"}</p>
                   </div>
-                  <span className="rounded-full bg-amber-50 px-3 py-1 text-sm font-medium text-amber-700">
-                    {table.capacity} places
-                  </span>
+                  <span className="rounded-full bg-amber-50 px-3 py-1 text-sm font-medium text-amber-700">{table.capacity} places</span>
                 </div>
                 <div className="mt-6 flex items-center gap-2 text-sm text-slate-600">
                   <UsersRound className="size-4 text-blue-700" />
-                  Table créée pour {wedding.name}.
+                  Table creee pour {wedding.name}.
                 </div>
               </article>
             )) : (
-              <div className="rounded-[2rem] border border-dashed border-blue-200 bg-white p-8 text-sm text-slate-600 md:col-span-2">
-                Aucune table créée pour ce mariage. Ajoutez votre première table à gauche.
+              <div className="surface-card border border-dashed border-blue-200 p-8 text-sm text-slate-600 md:col-span-2">
+                Aucune table creee pour ce mariage. Ajoutez votre premiere table a gauche.
               </div>
             )}
           </div>
         </section>
       )}
 
-      <section className="rounded-[2rem] border border-blue-100 bg-blue-700 p-6 text-white shadow-sm">
-        <h2 className="text-xl font-semibold">Capacité globale</h2>
+      <section className="hero-glow rounded-[2rem] border border-blue-100 bg-blue-700 p-6 text-white shadow-sm">
+        <h2 className="text-xl font-semibold">Capacite globale</h2>
         <p className="mt-2 text-sm text-blue-50">
-          {guests.length} invité(s) enregistrés pour {totalSeats} place(s). {missingSeats > 0 ? `${missingSeats} place(s) à prévoir.` : "La capacité actuelle couvre les invités enregistrés."}
+          {guests.length} invite(s) enregistres pour {totalSeats} place(s). {missingSeats > 0 ? `${missingSeats} place(s) a prevoir.` : "La capacite actuelle couvre les invites enregistres."}
         </p>
       </section>
     </main>
@@ -193,9 +189,9 @@ export default function TablesPage() {
 
 function SummaryCard({ label, value }: { label: string; value: string | number }) {
   return (
-    <div className="rounded-[1.5rem] border border-blue-100 bg-blue-50 p-4">
-      <p className="text-sm text-slate-500">{label}</p>
-      <p className="mt-2 text-2xl font-semibold text-slate-950">{value}</p>
+    <div className="rounded-[1.5rem] border border-white/15 bg-white/10 p-4 backdrop-blur-md">
+      <p className="text-sm text-blue-100/80">{label}</p>
+      <p className="mt-2 text-2xl font-semibold text-white">{value}</p>
     </div>
   )
 }

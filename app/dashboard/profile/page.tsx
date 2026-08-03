@@ -1,10 +1,10 @@
 import type { ComponentType } from "react"
-import { CalendarDays, CircleUserRound, Mail, ShieldCheck } from "lucide-react"
+import { CalendarDays, CircleUserRound, Mail, ShieldCheck, Sparkles } from "lucide-react"
 import { getCurrentViewer, getRoleLabel } from "@/lib/auth/current-user"
 
 export default async function ProfilePage() {
   const viewer = await getCurrentViewer()
-  const initials = (viewer?.name ?? "Mode démonstration")
+  const initials = (viewer?.name ?? "Mode demonstration")
     .split(" ")
     .slice(0, 2)
     .map((part) => part[0])
@@ -13,16 +13,19 @@ export default async function ProfilePage() {
 
   return (
     <main className="space-y-8">
-      <section className="rounded-[2rem] bg-white p-8 shadow-sm ring-1 ring-blue-100">
-        <p className="text-sm uppercase tracking-[0.3em] text-blue-700">Mon profil</p>
+      <section className="hero-glow overflow-hidden rounded-[2rem] border border-white/50 bg-[linear-gradient(135deg,rgba(15,23,42,0.96),rgba(37,99,235,0.9),rgba(245,158,11,0.78))] p-8 text-white shadow-[0_24px_80px_rgba(15,23,42,0.18)]">
+        <p className="inline-flex items-center gap-2 text-sm uppercase tracking-[0.3em] text-amber-200">
+          <Sparkles className="size-4" />
+          Mon profil
+        </p>
         <div className="mt-6 flex flex-col gap-6 sm:flex-row sm:items-center">
-          <div className="flex size-24 items-center justify-center rounded-[2rem] bg-gradient-to-br from-blue-700 to-blue-500 text-3xl font-semibold text-white shadow-lg shadow-blue-950/20">
+          <div className="hero-glow flex size-24 items-center justify-center rounded-[2rem] bg-white/12 text-3xl font-semibold text-white ring-1 ring-white/20 backdrop-blur-md">
             {initials || "N"}
           </div>
           <div>
-            <h1 className="text-3xl font-semibold text-slate-950">{viewer?.name ?? "Mode démonstration"}</h1>
-            <p className="mt-2 text-sm text-slate-600">
-              {viewer ? getRoleLabel(viewer.role) : "Données locales sans session Supabase active"}
+            <h1 className="text-3xl font-semibold text-white">{viewer?.name ?? "Mode demonstration"}</h1>
+            <p className="mt-2 text-sm text-blue-50/90">
+              {viewer ? getRoleLabel(viewer.role) : "Donnees locales sans session Supabase active"}
             </p>
           </div>
         </div>
@@ -30,17 +33,19 @@ export default async function ProfilePage() {
 
       <section className="grid gap-4 md:grid-cols-3">
         <ProfileCard icon={CircleUserRound} label="Identifiant" value={viewer?.id ?? "Session locale"} />
-        <ProfileCard icon={Mail} label="Email" value={viewer?.email ?? "Non connecté"} />
-        <ProfileCard icon={ShieldCheck} label="Rôle" value={viewer ? getRoleLabel(viewer.role) : "Démo"} />
+        <ProfileCard icon={Mail} label="Email" value={viewer?.email ?? "Non connecte"} />
+        <ProfileCard icon={ShieldCheck} label="Role" value={viewer ? getRoleLabel(viewer.role) : "Demo"} />
       </section>
 
-      <section className="rounded-[2rem] border border-blue-100 bg-blue-700 p-6 text-white shadow-sm">
+      <section className="surface-card p-6">
         <div className="flex items-center gap-3">
-          <CalendarDays className="size-5 text-amber-200" />
-          <h2 className="text-xl font-semibold">Espace organisateur</h2>
+          <div className="rounded-2xl bg-amber-50 p-3 text-amber-600 shadow-inner shadow-amber-100">
+            <CalendarDays className="size-5" />
+          </div>
+          <h2 className="text-xl font-semibold text-slate-950">Espace organisateur</h2>
         </div>
-        <p className="mt-3 text-sm leading-6 text-blue-50">
-          Ce profil sert à gérer les mariages, les invités, les tables, la galerie et les RSVP. Les droits sont protégés par Supabase dès que la session est active.
+        <p className="mt-3 text-sm leading-6 text-slate-600">
+          Ce profil sert a gerer les mariages, les invites, les tables, la galerie et les RSVP. Les droits sont proteges par Supabase des qu&apos;une session est active.
         </p>
       </section>
     </main>
@@ -49,7 +54,7 @@ export default async function ProfilePage() {
 
 function ProfileCard({ icon: Icon, label, value }: { icon: ComponentType<{ className?: string }>; label: string; value: string }) {
   return (
-    <div className="rounded-[1.75rem] border border-blue-100 bg-white p-5 shadow-sm">
+    <div className="surface-card p-5">
       <div className="flex items-center justify-between">
         <p className="text-sm text-slate-500">{label}</p>
         <Icon className="size-5 text-amber-500" />

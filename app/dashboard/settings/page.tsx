@@ -2,7 +2,7 @@
 
 import type { ComponentType } from "react"
 import { useEffect, useState } from "react"
-import { Bell, Database, Globe2, LockKeyhole, Settings, ShieldCheck } from "lucide-react"
+import { Bell, Database, Globe2, LockKeyhole, ShieldCheck, Sparkles } from "lucide-react"
 import { useToast } from "@/components/ui/toast"
 
 type HealthPayload = {
@@ -21,27 +21,9 @@ type SettingItem = {
 const SETTINGS_STORAGE_KEY = "ndoa:dashboard:settings:v1"
 
 const defaultSettings: SettingItem[] = [
-  {
-    id: "sms",
-    label: "Preparar les relances SMS/WhatsApp",
-    description: "Garde les numeros prets pour un futur fournisseur d'envoi.",
-    enabled: true,
-    icon: Bell,
-  },
-  {
-    id: "privacy",
-    label: "Masquer les donnees sensibles",
-    description: "Les invites publics ne voient jamais les contacts des autres invites.",
-    enabled: true,
-    icon: LockKeyhole,
-  },
-  {
-    id: "rsvp",
-    label: "RSVP simplifie",
-    description: "Confirmation avec prenom, nom, telephone et reponse uniquement.",
-    enabled: true,
-    icon: ShieldCheck,
-  },
+  { id: "sms", label: "Preparar les relances SMS/WhatsApp", description: "Garde les numeros prets pour un futur fournisseur d'envoi.", enabled: true, icon: Bell },
+  { id: "privacy", label: "Masquer les donnees sensibles", description: "Les invites publics ne voient jamais les contacts des autres invites.", enabled: true, icon: LockKeyhole },
+  { id: "rsvp", label: "RSVP simplifie", description: "Confirmation avec prenom, nom, telephone et reponse uniquement.", enabled: true, icon: ShieldCheck },
 ]
 
 function readStoredSettings() {
@@ -75,9 +57,7 @@ export default function SettingsPage() {
 
   function toggleSetting(settingId: string) {
     setSettings((current) => {
-      const next = current.map((setting) =>
-        setting.id === settingId ? { ...setting, enabled: !setting.enabled } : setting,
-      )
+      const next = current.map((setting) => setting.id === settingId ? { ...setting, enabled: !setting.enabled } : setting)
       if (typeof window !== "undefined") {
         const serialized = Object.fromEntries(next.map((setting) => [setting.id, setting.enabled]))
         window.localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(serialized))
@@ -96,15 +76,13 @@ export default function SettingsPage() {
 
   return (
     <main className="space-y-8">
-      <section className="rounded-[2rem] bg-gradient-to-br from-blue-800 via-blue-700 to-blue-600 p-8 text-white shadow-xl shadow-blue-950/20">
+      <section className="hero-glow overflow-hidden rounded-[2rem] border border-white/50 bg-[linear-gradient(135deg,rgba(15,23,42,0.96),rgba(37,99,235,0.9),rgba(14,165,233,0.84))] p-8 text-white shadow-[0_24px_80px_rgba(15,23,42,0.18)]">
         <div className="flex items-center gap-3">
-          <Settings className="size-6 text-amber-200" />
+          <Sparkles className="size-5 text-amber-200" />
           <p className="text-sm uppercase tracking-[0.3em] text-amber-200">Parametres</p>
         </div>
         <h1 className="mt-3 text-3xl font-semibold">Configuration application</h1>
-        <p className="mt-3 max-w-3xl text-sm leading-6 text-blue-50">
-          Etat de production, preferences de securite et comportement du RSVP.
-        </p>
+        <p className="mt-3 max-w-3xl text-sm leading-6 text-blue-50">Etat de production, preferences de securite et comportement du RSVP.</p>
       </section>
 
       <section className="grid gap-4 md:grid-cols-3">
@@ -113,23 +91,19 @@ export default function SettingsPage() {
         <StatusCard icon={ShieldCheck} label="Base de donnees" value={health?.checks?.supabaseDatabase ? "Prete" : "A verifier"} />
       </section>
 
-      <section className="rounded-[2rem] border border-blue-100 bg-white p-6 shadow-sm">
+      <section className="surface-card p-6">
         <div className="flex items-center justify-between gap-4">
           <div>
             <h2 className="text-xl font-semibold text-slate-950">Preferences actives</h2>
-            <p className="mt-2 text-sm text-slate-600">
-              Ces reglages sont maintenant conserves dans ce navigateur et survivent au rechargement.
-            </p>
+            <p className="mt-2 text-sm text-slate-600">Ces reglages sont maintenant conserves dans ce navigateur et survivent au rechargement.</p>
           </div>
-          <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700">
-            Sauvegarde locale
-          </span>
+          <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700">Sauvegarde locale</span>
         </div>
         <div className="mt-6 grid gap-4">
           {settings.map((item) => {
             const Icon = item.icon
             return (
-              <label key={item.id} className="flex cursor-pointer items-center justify-between gap-4 rounded-[1.5rem] border border-blue-100 bg-blue-50/70 p-4">
+              <label key={item.id} className="interactive-lift flex cursor-pointer items-center justify-between gap-4 rounded-[1.5rem] border border-blue-100 bg-blue-50/70 p-4">
                 <span className="flex items-center gap-4">
                   <span className="rounded-2xl bg-white p-3 text-blue-700 shadow-sm">
                     <Icon className="size-5" />
@@ -139,12 +113,7 @@ export default function SettingsPage() {
                     <span className="text-sm text-slate-600">{item.description}</span>
                   </span>
                 </span>
-                <input
-                  type="checkbox"
-                  checked={item.enabled}
-                  onChange={() => toggleSetting(item.id)}
-                  className="size-5 accent-blue-700"
-                />
+                <input type="checkbox" checked={item.enabled} onChange={() => toggleSetting(item.id)} className="size-5 accent-blue-700" />
               </label>
             )
           })}
@@ -156,7 +125,7 @@ export default function SettingsPage() {
 
 function StatusCard({ icon: Icon, label, value }: { icon: ComponentType<{ className?: string }>; label: string; value: string }) {
   return (
-    <div className="rounded-[1.75rem] border border-blue-100 bg-white p-5 shadow-sm">
+    <div className="surface-card p-5">
       <div className="flex items-center justify-between">
         <p className="text-sm text-slate-500">{label}</p>
         <Icon className="size-5 text-amber-500" />
