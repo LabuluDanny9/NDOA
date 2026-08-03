@@ -54,6 +54,7 @@ export function fromGuestApiRow(row: GuestApiRow): Guest {
     message: row.notes ?? undefined,
     qrCode: row.id,
     inviteCode: row.id.slice(0, 8).toUpperCase(),
+    checkedInAt: row.checked_in_at,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   }
@@ -73,6 +74,7 @@ export function toGuestApiPayload(guest: Guest) {
     notes: guest.message ?? null,
     tags: guest.category ? [guest.category] : [],
     rsvpStatus: toApiRsvp(guest.rsvpStatus),
+    checkedInAt: guest.checkedInAt ?? null,
   }
 }
 
@@ -96,6 +98,13 @@ export async function createGuest(weddingId: string, guest: Guest) {
 
 export async function updateGuest(weddingId: string, guest: Guest) {
   return request<GuestApiRow>(`/api/weddings/${encodeURIComponent(weddingId)}/guests/${encodeURIComponent(guest.id)}`, { method: "PATCH", body: JSON.stringify(toGuestApiPayload(guest)) })
+}
+
+export async function checkInGuest(weddingId: string, guestId: string, checkedInAt = new Date().toISOString()) {
+  return request<GuestApiRow>(`/api/weddings/${encodeURIComponent(weddingId)}/guests/${encodeURIComponent(guestId)}`, {
+    method: "PATCH",
+    body: JSON.stringify({ checkedInAt }),
+  })
 }
 
 export async function deleteGuest(weddingId: string, guestId: string) {

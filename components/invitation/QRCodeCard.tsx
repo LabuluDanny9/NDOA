@@ -6,7 +6,15 @@ import { QrCode } from "lucide-react"
 import QRCode from "react-qr-code"
 import { Button } from "@/components/ui/button"
 
-export default function QRCodeCard({ url, code }: { url: string; code: string }) {
+export default function QRCodeCard({
+  url,
+  code,
+  description = "Scannez ce code pour acceder directement a l'invitation.",
+}: {
+  url: string
+  code: string
+  description?: string
+}) {
   const qrContainerRef = useRef<HTMLDivElement>(null)
 
   function downloadQrCode() {
@@ -33,7 +41,7 @@ export default function QRCodeCard({ url, code }: { url: string; code: string })
       <div className="flex items-center justify-between gap-4">
         <div>
           <p className="text-sm uppercase tracking-[0.35em] text-slate-400">QR Code</p>
-          <h2 className="mt-3 text-3xl font-semibold text-white">Accès instantané</h2>
+          <h2 className="mt-3 text-3xl font-semibold text-white">Acces instantane</h2>
         </div>
         <QrCode className="h-7 w-7 text-secondary" />
       </div>
@@ -41,9 +49,9 @@ export default function QRCodeCard({ url, code }: { url: string; code: string })
         <div ref={qrContainerRef} className="mx-auto rounded-3xl bg-white p-4">
           <QRCode value={url} size={144} aria-label={`QR code pour ${url}`} />
         </div>
-        <p className="text-sm text-slate-400">Scannez ce code pour accéder directement à l’invitation.</p>
+        <p className="text-sm text-slate-400">{description}</p>
         <Button type="button" variant="secondary" onClick={downloadQrCode}>
-          Télécharger le QR code
+          Telecharger le QR code
         </Button>
         <p className="rounded-full bg-slate-900/70 px-4 py-2 text-xs uppercase tracking-[0.35em] text-slate-300">Code: {code}</p>
       </div>

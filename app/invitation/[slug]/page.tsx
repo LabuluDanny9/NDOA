@@ -84,6 +84,7 @@ function publicInvitationToView(value: PublicInvitation) {
 
 type InvitationPageProps = {
   params: Promise<{ slug: string }>
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
 export async function generateMetadata({ params }: InvitationPageProps): Promise<Metadata> {
@@ -96,12 +97,18 @@ export async function generateMetadata({ params }: InvitationPageProps): Promise
   }
 }
 
-export default async function InvitationPage({ params }: InvitationPageProps) {
+export default async function InvitationPage({ params, searchParams }: InvitationPageProps) {
   const { slug } = await params
+  const query = searchParams ? await searchParams : {}
   const published = await getPublicInvitation(slug)
   const invitation = published ? publicInvitationToView(published) : demoInvitation
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"
   const eventUrl = new URL(`/invitation/${encodeURIComponent(slug)}`, appUrl).toString()
+  const guestCode = typeof query.code === "string" && query.code.trim() ? query.code.trim().toUpperCase() : "NDOA-2026"
+  const guestId = typeof query.guest === "string" && query.guest.trim() ? query.guest.trim() : null
+  const qrUrl = new URL(eventUrl)
+  if (guestId) qrUrl.searchParams.set("guest", guestId)
+  if (guestCode) qrUrl.searchParams.set("code", guestCode)
 
   return (
     <div className="min-h-screen bg-blue-50 text-slate-950">
@@ -128,7 +135,11 @@ export default async function InvitationPage({ params }: InvitationPageProps) {
             </div>
             <div className="space-y-5">
               <RSVPForm slug={slug} />
-              <QRCodeCard url={eventUrl} code="NDOA-2026" />
+              <QRCodeCard
+                url={qrUrl.toString()}
+                code={guestCode}
+                description="Scannez ce QR code a l'entree pour retrouver instantanement l'invitation de cet invite."
+              />
             </div>
           </div>
         </section>

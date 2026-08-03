@@ -38,6 +38,13 @@ export function saveLocalGuest(weddingId: string, guest: Guest) {
   return guest
 }
 
+export function markLocalGuestCheckedIn(weddingId: string, guestId: string, checkedInAt = new Date().toISOString()) {
+  const current = readLocalGuests(weddingId)
+  const updated = current.map((guest) => guest.id === guestId ? { ...guest, checkedInAt, updatedAt: checkedInAt } : guest)
+  writeLocalGuests(weddingId, updated)
+  return updated.find((guest) => guest.id === guestId) ?? null
+}
+
 export function deleteLocalGuest(weddingId: string, guestId: string) {
   const current = readLocalGuests(weddingId)
   writeLocalGuests(weddingId, current.filter((guest) => guest.id !== guestId))

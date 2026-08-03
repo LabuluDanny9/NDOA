@@ -35,6 +35,7 @@ export interface Guest {
   message?: string
   qrCode?: string
   inviteCode?: string
+  checkedInAt?: string | null
   createdAt: string
   updatedAt: string
 }

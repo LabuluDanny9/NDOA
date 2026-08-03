@@ -116,7 +116,7 @@ export function toGuestUpdate(input: Record<string, unknown>): TablesUpdate<"gue
   const mappings = {
     groupId: "group_id", tableId: "table_id", firstName: "first_name", lastName: "last_name", middleName: "middle_name",
     email: "email", phone: "phone", city: "city", category: "category", language: "language", allowedCompanions: "allowed_companions",
-    notes: "notes", tags: "tags", rsvpStatus: "rsvp_status", invitationStatus: "invitation_status",
+    notes: "notes", tags: "tags", rsvpStatus: "rsvp_status", invitationStatus: "invitation_status", checkedInAt: "checked_in_at",
   } as const
   for (const [source, target] of Object.entries(mappings)) {
     if (input[source] !== undefined) (update as Record<string, unknown>)[target] = input[source]

@@ -46,7 +46,11 @@ export const guestCreateSchema = z.object({
   city: z.string().trim().max(100).optional().nullable(), category: z.string().trim().max(80).optional().nullable(), language: z.string().trim().min(2).max(10).default("fr"),
   allowedCompanions: z.number().int().min(0).max(20).default(0), notes: z.string().trim().max(5000).optional().nullable(), tags: z.array(z.string().trim().min(1).max(40)).max(30).default([]),
 })
-export const guestUpdateSchema = guestCreateSchema.partial().extend({ rsvpStatus: z.enum(["pending", "accepted", "declined", "maybe"]).optional(), invitationStatus: z.enum(["draft", "queued", "sent", "delivered", "opened", "failed"]).optional() })
+export const guestUpdateSchema = guestCreateSchema.partial().extend({
+  rsvpStatus: z.enum(["pending", "accepted", "declined", "maybe"]).optional(),
+  invitationStatus: z.enum(["draft", "queued", "sent", "delivered", "opened", "failed"]).optional(),
+  checkedInAt: z.string().datetime({ offset: true }).optional().nullable(),
+})
 export const guestGroupSchema = z.object({ name: shortText(80), description: z.string().trim().max(1000).optional().nullable(), color: z.string().regex(/^#[0-9a-fA-F]{6}$/).optional().nullable(), position: z.number().int().min(0).max(10_000).default(0) })
 export const guestTableSchema = z.object({ name: shortText(80), capacity: z.number().int().positive().max(100), shape: z.string().trim().max(40).optional().nullable(), location: z.string().trim().max(160).optional().nullable(), position: z.number().int().min(0).max(10_000).default(0) })
 export const messageCreateSchema = z.object({
